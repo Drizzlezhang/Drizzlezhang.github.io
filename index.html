@@ -1,41 +1,228 @@
-extends base
-- var current_title = page.title || tag.name || category.name || site.title
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" >
+  <title>Drizzlezhang&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Drizzlezhang's blog">
+<meta property="og:url" content="http://yoursite.com/index.html">
+<meta property="og:site_name" content="Drizzlezhang's blog">
+<meta property="og:description">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Drizzlezhang's blog">
+<meta name="twitter:description">
+  
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
 
-block title
-  title= config.title + " | " + config.subtitle
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img src="undefined" class="js-avatar" style="width: 100%;height: 100%;opacity: 1;">
+			
+		</a>
 
-block main
+		<hgroup>
+		  <h1 class="header-author"><a href="/">Drizzle Zhang</a></h1>
+		</hgroup>
 
-  article
-    #index-main.container.entries
-      for post in page.posts.toArray()
-        .post-entry
-          .post-time= post.date.format(config.date_format)
-          .post-desc
-            .post-title
-              if post.link
-                  a(href=url_for(post.link),target="_blank", itemprop="url")= post.title
-              else
-                  a(href=url_for(post.path))= post.title
+		
+		<p class="header-subtitle">野蛮生长，不忘初心</p>
+		
 
-            .post-content
-              if post.description
-                != post.description
-              else if post.excerpt
-                != post.excerpt
-              else if post.content
-                - var br = post.content.indexOf('</p>')
-                if br < 0
-                  != post.content
-                else
-                  != post.content.substring(0, br + 4)
+		
 
-            .post-meta
-              if (post.tags && post.tags.length)
-                .post-tags
-                  != list_tags(post.tags, {show_count: false, class: 'post-tag', style:'none', separator:'/'})
-              if (post.categories && post.categories.length)
-                .post-categories
-                  != list_categories(post.categories, {show_count: false, class: 'post-category', style: 'none', separator: '>'})
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+						</div>
+					</nav>
+				</section>
+				
+				
+				
+				
 
-  include _partial/paginator.jade
+				
+			</div>
+		</div>
+	</header>				
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">Drizzle Zhang</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+			
+				<img src="undefined" class="js-avatar" style="width: 100%;height: 100%;opacity: 1;">
+			
+			</div>
+			<hgroup>
+			  <h1 class="header-author">Drizzle Zhang</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">野蛮生长，不忘初心</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap">
+  
+    <article id="post-EffectiveJava-避免过度同步" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/03/07/EffectiveJava-避免过度同步/" class="article-date">
+  	<time datetime="2016-03-07T09:55:14.000Z" itemprop="datePublished">2016-03-07</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/03/07/EffectiveJava-避免过度同步/">EffectiveJava-避免过度同步</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>上周做关于Java并发的技术分享，我用了《Effective Java》中 <strong>避免过度同步</strong> 这一节的代码，之前看的时候没有彻底理解，现在重新分析一遍。这次就直接放书中代码吧：</p>
+<h5 id="ForwardingSet-java"><a href="#ForwardingSet-java" class="headerlink" title="ForwardingSet.java"></a>ForwardingSet.java</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">public class ForwardingSet&#60;E&#62; implements Set&#60;E&#62;&#123;  &#10;&#10;private final Set&#60;E&#62; s;  &#10;&#10;public ForwardingSet(Set&#60;E&#62; s)&#123;  &#10;    this.s = s;  &#10;&#125;  &#10;&#10;@Override  &#10;public int size() &#123;return this.s.size();&#125;  &#10;&#10;@Override  &#10;public void clear() &#123;this.s.clear();&#125;  &#10;&#10;@Override  &#10;public boolean isEmpty() &#123;return this.s.isEmpty();&#125;  &#10;&#10;@Override  &#10;public boolean contains(Object o) &#123;return this.s.contains(o);&#125;&#10;&#10;@Override  &#10;public Iterator&#60;E&#62; iterator() &#123;return this.s.iterator();&#125;  &#10;&#10;@Override  &#10;public Object[] toArray() &#123;return this.s.toArray();&#125;  &#10;&#10;@Override  &#10;public &#60;T&#62; T[] toArray(T[] a) &#123;return this.s.toArray(a);&#125;  &#10;&#10;@Override  &#10;public boolean add(E e) &#123;return this.s.add(e);&#125;  &#10;&#10;@Override  &#10;public boolean remove(Object o) &#123;return this.s.remove(o);&#125;  &#10;&#10;@Override  &#10;public boolean containsAll(Collection&#60;?&#62; c) &#123;return this.s.containsAll(c);&#125;  &#10;&#10;@Override  &#10;public boolean addAll(Collection&#60;? extends E&#62; c) &#123;return this.s.addAll(c);&#125;  &#10;&#10;@Override  &#10;public boolean retainAll(Collection&#60;?&#62; c) &#123;return this.s.removeAll(c);&#125;  &#10;&#10;&#10;@Override  &#10;public boolean removeAll(Collection&#60;?&#62; c) &#123;return this.s.retainAll(c);&#125;  &#10;&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="ObservableSet-java"><a href="#ObservableSet-java" class="headerlink" title="ObservableSet.java"></a>ObservableSet.java</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">public class ObservableSet&#60;E&#62; extends ForwardingSet&#60;E&#62;&#123;  &#10;&#10;public ObservableSet(Set&#60;E&#62; s) &#123;  &#10;    super(s);  &#10;&#125;  &#10;&#10;&#10;private final List&#60;SetObserver&#60;E&#62;&#62;  observers =   &#10;    new ArrayList&#60;SetObserver&#60;E&#62;&#62;();  &#10;&#10;public void addObserver(SetObserver&#60;E&#62; observer)&#123;  &#10;    synchronized (observers) &#123;  &#10;        observers.add(observer);  &#10;    &#125;   &#10;&#125;  &#10;&#10;public boolean removeObserver(SetObserver&#60;E&#62; observer)&#123;  &#10;    synchronized (observers) &#123;  &#10;        return observers.remove(observer);  &#10;    &#125;  &#10;&#125;  &#10;&#10;private void notifyElementAdded(E element)&#123;  &#10;    synchronized (observers) &#123;  &#10;        for(SetObserver&#60;E&#62; observer : observers)&#123;  &#10;            observer.added(this, element);  &#10;        &#125;  &#10;    &#125;  &#10;&#125;  &#10;&#10;@Override  &#10;public boolean add(E element) &#123;  &#10;    boolean added = super.add(element);  &#10;    if (added) &#123;  &#10;        notifyElementAdded(element);  &#10;    &#125;   &#10;    return added;  &#10;&#125;  &#10;&#10;@Override  &#10;public boolean addAll(Collection&#60;? extends E&#62; c) &#123;  &#10;    boolean result = false;  &#10;    for(E element : c)&#123;  &#10;        result |= add(element);  &#10;    &#125;  &#10;    return result;  &#10;&#125;  &#10;&#10;&#125;</span><br></pre></td></tr></table></figure>
+<p>ObservableSet中通过addObserver订阅通知，removeObserver取消订阅。</p>
+<h5 id="SetObserver-java"><a href="#SetObserver-java" class="headerlink" title="SetObserver.java"></a>SetObserver.java</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">public interface SetObserver&#60;E&#62; &#123;  &#10;    void added(ObservableSet&#60;E&#62; set, E element);  &#10;&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="Main-java"><a href="#Main-java" class="headerlink" title="Main.java"></a>Main.java</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">public static void main(String[] args) &#123;  &#10;    ObservableSet&#60;Integer&#62; set = new  ObservableSet&#60;Integer&#62;(new HashSet&#60;Integer&#62;());  &#10;    set.addObserver(new SetObserver&#60;Integer&#62;() &#123;  &#10;&#10;        @Override  &#10;        public void added(ObservableSet&#60;Integer&#62; set, Integer element) &#123;  &#10;&#10;             System.out.print(element+&#34; &#34;);  &#10;             if (element == 23) &#123;  &#10;                ExecutorService executorService = Executors.newSingleThreadExecutor();  &#10;&#10;&#10;               final SetObserver&#60;Integer&#62; observer = this;  &#10;&#10; //    &#20351;&#29992;submit(Runnable).get()&#26041;&#27861;&#10;                try &#123;    &#10;                    executorService.submit(new Runnable() &#123;  &#10;                        @Override  &#10;                        public void run() &#123;  &#10;                            set.removeObserver(observer);  &#10;                        &#125;  &#10;                    &#125;).get();  &#10;                &#125; catch (ExecutionException ex) &#123;  &#10;                    throw new AssertionError(ex.getCause());  &#10;                &#125;catch (InterruptedException ex) &#123;  &#10;                    throw new AssertionError(ex.getCause());  &#10;                &#125;finally&#123;  &#10;                    executorService.shutdown();  &#10;                &#125;  &#10;&#10;//    &#20351;&#29992;execute&#26041;&#27861;&#10;//                    try &#123;&#10;//                        executorService.execute(new Runnable() &#123;&#10;//                            @Override&#10;//                            public void run() &#123;&#10;//                                set.removeObserver(observer);&#10;//                            &#125;&#10;//                        &#125;);&#10;//                    &#125; catch (AssertionError ex) &#123;&#10;//                        throw new AssertionError(ex.getCause());&#10;//                    &#125; finally &#123;&#10;//                        executorService.shutdown();&#10;//                    &#125;&#10;            &#125;  &#10;        &#125;  &#10;    &#125;);  &#10;&#10;    for(int i = 0; i &#60; 100; i++)&#123;  &#10;        set.add(i);  &#10;    &#125;  &#10;&#125;</span><br></pre></td></tr></table></figure>
+<p>在main方法里给ObservableSet的一个实例循环添加0~99，不对这个实例进行其他操作时正常打印0~99。然后在循环中间remove掉观察者的话有两种情况：</p>
+<ul>
+<li>在当前线程中直接调用removeObserver()，这时候会报ConcurrentModificationException的异常，书中原文：</li>
+</ul>
+<blockquote>
+<p>问题在于，当notifyElementAdded调用观察者的added方法时，他正处于遍历observers列表的过程中。added方法调用可观察集合的removeObserver方法，从而调用observers.remove方法。现在我们有麻烦了。我们正企图在遍历列表的过程中，将一个元素从列表中删除，这是非法的，notifyElementAdded方法中的迭代式在一个同步块中，可以防止并发修改，但是无法防止迭代线程本身回调到可观察的集合中，也无法防止修改它的observers列表。</p>
+</blockquote>
+<ul>
+<li>用Java提供的ExecutorService在子线程调用removeObserver。书中使用的是submit(Runnable).get()方法,在这种情况下程序出现死锁，子线程无法删除观察者，主线程也无法继续执行循环。书中原文：</li>
+</ul>
+<blockquote>
+<p>后台线程调用set.removeObserver，他企图锁定observers，但他无法获得该锁，因为主线程已经没有锁了。在这期间，主线程一直在等待后台程序来完成对观察者的删除，这正是造成死锁的原因。</p>
+</blockquote>
+<p>截止目前都用的书中的代码，当时我偷懒用了一个平时常用的execute方法,然后就不发生死锁了，循环执行到目标数字后的某个数字都会成功remove掉观察者，循环完毕程序正常退出。而如果使用submit方法，只有在submit(Runnable).get()的情况下才会死锁，其他情形下都跟execute一样。</p>
+<p>看Java的文档可以知道一般使用execute和submit的区别是submit会返回一个Future，相当于当前任务的返回值，然后《Think in Java》中关于ExecutorService有一段：</p>
+<blockquote>
+<p>submit()方法会产生Future对象，它用Callable返回结果的特定类型进行了参数化，你可以用isDone()方法来查询Future是否已经完成。当任务完成时，它具有一个结果，你可以调用get()方法来获取该结果。你也可以不用isDone()进行检查就直接调用get()，在这种情况下get()将阻塞，直至结果准备就绪。你还可以在试图调用get()来获取结果之前，先调用具有超时的get()，或者调用isDone来查看任务是否完成。</p>
+</blockquote>
+<p>如果这里使用的是get()的超时方法，那么在超时之前可以看到isDone为false，超时之后catch一个TimeoutException,然后跟其余情况一样观察者正常remove。</p>
+<p>所以这里使用submit(Runnable).get()的目的是模拟一个后台线程获取主线程上的锁，获取不到就直接阻塞，最终造成死锁的情况。（而不只是由于在其他线程调用外部方法导致死锁）</p>
+<p>关于周二的错误只先弄清楚了使用ExecutorService相关的。由于基本没接触过Java并发，关于锁和阻塞这些还是没搞清楚，还得继续看-_-！。</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
+	</div>
+
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
+  
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2016 Drizzle Zhang
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+
+<script>
+	var yiliaConfig = {
+		fancybox: undefined,
+		mathjax: undefined,
+		animate: undefined,
+		isHome: true,
+		isPost: false,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: undefined
+	}
+</script>
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="/js/main.js" type="text/javascript"></script>
+
+
+
+
+
+
+  </div>
+</body>
+</html>

@@ -1,42 +1,192 @@
-extends base
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" >
+  <title>Tag: Java | Drizzlezhang&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Drizzlezhang's blog">
+<meta property="og:url" content="http://yoursite.com/tags/Java/index.html">
+<meta property="og:site_name" content="Drizzlezhang's blog">
+<meta property="og:description">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Drizzlezhang's blog">
+<meta name="twitter:description">
+  
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
 
-block title
-  if page.category
-     title= page.category + " | " + config.title
-  if page.tag
-     title= page.tag + " | " + config.title
-  if page.archive
-     title= __('archive') + " | " + config.title
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img src="undefined" class="js-avatar" style="width: 100%;height: 100%;opacity: 1;">
+			
+		</a>
 
-block main
-  article
-    .container
-      if page.category || page.tag
-          h1.label-title=  (page.category || page.tag)
-      .post
-        // show all categories and tags
-        if !(page.category || page.tag)
-            .all-categories
-              ul.tag-box.list-unstyled
-                for category in site.categories.sort('name').toArray()
-                  li
-                    a(href='/categories/'+category.name)= category.name
-                      span= category.posts.length
-            .all-tags
-              ul.tag-box.list-unstyled
-                for tag in site.tags.sort('name').toArray()
-                  li
-                    a(href='/tags/'+tag.name)= tag.name
-                      span= tag.posts.length
+		<hgroup>
+		  <h1 class="header-author"><a href="/">Drizzle Zhang</a></h1>
+		</hgroup>
 
-        .post-archive
-            //Use lodash to classify posts. See https://lodash.com/docs#groupBy
-            each posts, year in _.groupBy(page.posts.toArray(), function(p){return -p.date.format('YYYY')})
-              h2= -year
-              ul.listing
-                for post in posts
-                  li
-                    span.date= post.date.format('YYYY/MM/DD')
-                    a(href=url_for(post.path), title=post.title)
-                      = post.title
-  include _partial/paginator.jade
+		
+		<p class="header-subtitle">野蛮生长，不忘初心</p>
+		
+
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+						</div>
+					</nav>
+				</section>
+				
+				
+				
+				
+
+				
+			</div>
+		</div>
+	</header>				
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">Drizzle Zhang</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+			
+				<img src="undefined" class="js-avatar" style="width: 100%;height: 100%;opacity: 1;">
+			
+			</div>
+			<hgroup>
+			  <h1 class="header-author">Drizzle Zhang</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">野蛮生长，不忘初心</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap">
+  
+  
+    
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2016" class="archive-year">2016</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2016/03/07/EffectiveJava-避免过度同步/" class="archive-article-date">
+  	<time datetime="2016-03-07T09:55:14.000Z" itemprop="datePublished">Mar 7</time>
+</a>
+        </div>
+    	 
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2016/03/07/EffectiveJava-避免过度同步/">EffectiveJava-避免过度同步</a>
+    </h1>
+  
+
+        <div class="article-info info-on-right">
+          
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
+	</div>
+
+          
+
+        </div>
+        <div class="clearfix"></div>
+    </header>
+  </div>
+</article>
+  
+  
+    </div></section>
+  
+
+    
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2016 Drizzle Zhang
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+
+<script>
+	var yiliaConfig = {
+		fancybox: undefined,
+		mathjax: undefined,
+		animate: undefined,
+		isHome: false,
+		isPost: false,
+		isArchive: false,
+		isTag: true,
+		isCategory: false,
+		open_in_new: undefined
+	}
+</script>
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="/js/main.js" type="text/javascript"></script>
+
+
+
+
+
+
+  </div>
+</body>
+</html>
