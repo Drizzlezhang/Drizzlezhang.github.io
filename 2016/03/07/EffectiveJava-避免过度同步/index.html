@@ -4,17 +4,21 @@
   <meta charset="utf-8">
   
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
-  <title>Drizzlezhang&#39;s blog</title>
+  <title>EffectiveJava-避免过度同步 | Drizzlezhang&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Drizzlezhang's blog">
-<meta property="og:url" content="http://yoursite.com/index.html">
+  <meta name="description" content="Effective Java–避免过度同步上周做关于Java并发的技术分享，我用了《Effective Java》中 避免过度同步 这一节的代码，之前看的时候没有彻底理解，现在重新分析一遍。这次就直接放书中代码吧：
+ForwardingSet.java1public class ForwardingSet&amp;#60;E&amp;#62; implements Set&amp;#60;E&amp;#62;&amp;#123;  &amp;#">
+<meta property="og:type" content="article">
+<meta property="og:title" content="EffectiveJava-避免过度同步">
+<meta property="og:url" content="http://yoursite.com/2016/03/07/EffectiveJava-避免过度同步/index.html">
 <meta property="og:site_name" content="Drizzlezhang's blog">
-<meta property="og:description">
+<meta property="og:description" content="Effective Java–避免过度同步上周做关于Java并发的技术分享，我用了《Effective Java》中 避免过度同步 这一节的代码，之前看的时候没有彻底理解，现在重新分析一遍。这次就直接放书中代码吧：
+ForwardingSet.java1public class ForwardingSet&amp;#60;E&amp;#62; implements Set&amp;#60;E&amp;#62;&amp;#123;  &amp;#">
+<meta property="og:updated_time" content="2016-03-07T09:55:50.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Drizzlezhang's blog">
-<meta name="twitter:description">
+<meta name="twitter:title" content="EffectiveJava-避免过度同步">
+<meta name="twitter:description" content="Effective Java–避免过度同步上周做关于Java并发的技术分享，我用了《Effective Java》中 避免过度同步 这一节的代码，之前看的时候没有彻底理解，现在重新分析一遍。这次就直接放书中代码吧：
+ForwardingSet.java1public class ForwardingSet&amp;#60;E&amp;#62; implements Set&amp;#60;E&amp;#62;&amp;#123;  &amp;#">
   
   
   <link rel="stylesheet" href="/css/style.css" type="text/css">
@@ -102,9 +106,7 @@
 	</div>
 </nav>
 
-      <div class="body-wrap">
-  
-    <article id="post-EffectiveJava-避免过度同步" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-EffectiveJava-避免过度同步" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
       <a href="/2016/03/07/EffectiveJava-避免过度同步/" class="article-date">
@@ -118,12 +120,23 @@
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/03/07/EffectiveJava-避免过度同步/">EffectiveJava-避免过度同步</a>
+    <h1 class="article-title" itemprop="name">
+      EffectiveJava-避免过度同步
     </h1>
   
 
       </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
       
     
     <div class="article-entry" itemprop="articleBody">
@@ -159,20 +172,19 @@
       
     </div>
     
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/">Java</a></li></ul>
-	</div>
-
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
   </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2016/02/18/hello-world/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Hello Drizzle</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
   
 </article>
 
@@ -183,59 +195,6 @@
 
 
 
-
-  
-    <article id="post-hello-world" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2016/02/18/hello-world/" class="article-date">
-  	<time datetime="2016-02-18T09:16:20.000Z" itemprop="datePublished">2016-02-18</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/02/18/hello-world/">Hello Drizzle</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="This-is-my-first-blog"><a href="#This-is-my-first-blog" class="headerlink" title="This is my first blog."></a>This is my first blog.</h2><h4 id="Welcome"><a href="#Welcome" class="headerlink" title="Welcome."></a>Welcome.</h4>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-  
 </div>
       <footer id="footer">
   <div class="outer">
@@ -257,8 +216,8 @@
 		fancybox: undefined,
 		mathjax: undefined,
 		animate: undefined,
-		isHome: true,
-		isPost: false,
+		isHome: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,
