@@ -14,10 +14,10 @@
 <meta property="og:site_name" content="Drizzlezhang's blog">
 <meta property="og:description" content="RelativeLayout的gravity和ignoreGravityAndroid开发中使用最多的ViewGroup应该就是RelativeLayout了，虽然众所周知它在Measure的时候会测量两次子View，耗时会略微多一点，但是毕竟比其他布局更加灵活，熟练使用的话可以大大减少布局的嵌套，避免IDE提示你TooDeepLayout的时候才反应过来已经嵌套了太多的ViewGroup.
 使用">
-<meta property="og:image" content="http://yoursite.com/RelativeLayout的gravity和ignoreGravity/first.png">
+<meta property="og:image" content="http://yoursite.com/~first.png">
 <meta property="og:image" content="http://yoursite.com/RelativeLayout的gravity和ignoreGravity/second.png">
 <meta property="og:image" content="http://yoursite.com/RelativeLayout的gravity和ignoreGravity/third.png">
-<meta property="og:updated_time" content="2016-03-26T08:05:08.000Z">
+<meta property="og:updated_time" content="2016-03-26T08:15:38.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="RelativeLayout的gravity和ignoreGravity">
 <meta name="twitter:description" content="RelativeLayout的gravity和ignoreGravityAndroid开发中使用最多的ViewGroup应该就是RelativeLayout了，虽然众所周知它在Measure的时候会测量两次子View，耗时会略微多一点，但是毕竟比其他布局更加灵活，熟练使用的话可以大大减少布局的嵌套，避免IDE提示你TooDeepLayout的时候才反应过来已经嵌套了太多的ViewGroup.
@@ -147,7 +147,8 @@
         <h2 id="RelativeLayout的gravity和ignoreGravity"><a href="#RelativeLayout的gravity和ignoreGravity" class="headerlink" title="RelativeLayout的gravity和ignoreGravity"></a>RelativeLayout的gravity和ignoreGravity</h2><p>Android开发中使用最多的ViewGroup应该就是RelativeLayout了，虽然众所周知它在Measure的时候会测量两次子View，耗时会略微多一点，但是毕竟比其他布局更加灵活，熟练使用的话可以大大减少布局的嵌套，避免IDE提示你<em>TooDeepLayout</em>的时候才反应过来已经嵌套了太多的ViewGroup.</p>
 <p>使用RelativeLayout的时候常用的应该就是给子View设置一些属性，例如子View相对于父Layout的<code>layout_centerInParent</code>,<code>layout_centerHorizontal</code>，<code>layout_alignParentTop</code>,<code>layout_alignParentLeft</code>等等这类属性，以及子View相对于其他子View的<code>layout_above</code>,<code>layout_toLeftOf</code>和类似的属性，常用RelativeLayout的开发者应该对这些属性都很熟悉了，能都做到熟练使用的话一般的布局应该都不成问题了.所以就不在这里废话了.今天总结的主要是RelativeLayout一个不太常见的属性–gravity（或者是我和周围的同事不太常用的）.</p>
 <h3 id="gravity属性"><a href="#gravity属性" class="headerlink" title="gravity属性"></a>gravity属性</h3><p>有一天你的PM让你实现一个界面，大概是这样：</p>
-<p><img src="RelativeLayout的gravity和ignoreGravity/first.png" alt="gravity示例"></p>
+<p><img src="~first.png" alt="gravity示例"></p>
+
 <p>要求是中间这几个button占用的空间不论button怎么变化始终都在父布局的中间.<br>看起来并不难，父布局用一个RelativeLayout,写一个width和height都为<code>wrap_content</code>的RelativeLayout设置属性<code>layout_centerInParent</code>为true.布局中second button放在first button的右边，third button放在first button下面。这样不论三个button大小怎么变，他们所占的空间始终是子布局的RelativeLayout的大小，所以始终在父布局的正中间.如果觉得性能不够好的话也可以把父布局设为FrameLayout,然后子RelativeLayout设置的属性为<code>layout_gravity=&quot;center&quot;</code>,也可以达到同样的效果.<br>代码如下：</p>
 <pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
 &lt;RelativeLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;
