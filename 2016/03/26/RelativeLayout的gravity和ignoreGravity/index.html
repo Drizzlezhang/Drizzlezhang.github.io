@@ -6,22 +6,22 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <title>RelativeLayout的gravity和ignoreGravity | Drizzlezhang&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="RelativeLayout的gravity和ignoreGravityAndroid开发中使用最多的ViewGroup应该就是RelativeLayout了，虽然众所周知它在Measure的时候会测量两次子View，耗时会略微多一点，但是毕竟比其他布局更加灵活，熟练使用的话可以大大减少布局的嵌套，避免IDE提示你TooDeepLayout的时候才反应过来已经嵌套了太多的ViewGroup.
-使用">
+  <meta name="description" content="Android开发中使用最多的ViewGroup应该就是RelativeLayout了，虽然众所周知它在Measure的时候会测量两次子View，耗时会略微多一点，但是毕竟比其他布局更加灵活，熟练使用的话可以大大减少布局的嵌套，避免IDE提示你TooDeepLayout的时候才反应过来已经嵌套了太多的ViewGroup.
+使用RelativeLayout的时候常用的应该就是给子View设置一些属性">
 <meta property="og:type" content="article">
 <meta property="og:title" content="RelativeLayout的gravity和ignoreGravity">
 <meta property="og:url" content="http://yoursite.com/2016/03/26/RelativeLayout的gravity和ignoreGravity/index.html">
 <meta property="og:site_name" content="Drizzlezhang's blog">
-<meta property="og:description" content="RelativeLayout的gravity和ignoreGravityAndroid开发中使用最多的ViewGroup应该就是RelativeLayout了，虽然众所周知它在Measure的时候会测量两次子View，耗时会略微多一点，但是毕竟比其他布局更加灵活，熟练使用的话可以大大减少布局的嵌套，避免IDE提示你TooDeepLayout的时候才反应过来已经嵌套了太多的ViewGroup.
-使用">
-<meta property="og:image" content="http://yoursite.com/~first.png">
-<meta property="og:image" content="http://yoursite.com/RelativeLayout的gravity和ignoreGravity/second.png">
-<meta property="og:image" content="http://yoursite.com/RelativeLayout的gravity和ignoreGravity/third.png">
-<meta property="og:updated_time" content="2016-03-26T08:17:44.000Z">
+<meta property="og:description" content="Android开发中使用最多的ViewGroup应该就是RelativeLayout了，虽然众所周知它在Measure的时候会测量两次子View，耗时会略微多一点，但是毕竟比其他布局更加灵活，熟练使用的话可以大大减少布局的嵌套，避免IDE提示你TooDeepLayout的时候才反应过来已经嵌套了太多的ViewGroup.
+使用RelativeLayout的时候常用的应该就是给子View设置一些属性">
+<meta property="og:image" content="http://ww1.sinaimg.cn/large/a61009a8jw1f2acfpm06sj207s0cbq37.jpg">
+<meta property="og:image" content="http://ww2.sinaimg.cn/large/a61009a8jw1f2acgce67wj207s0cbmxf.jpg">
+<meta property="og:image" content="http://ww1.sinaimg.cn/large/a61009a8jw1f2acgjrlo7j207s0cbglw.jpg">
+<meta property="og:updated_time" content="2016-03-26T08:28:22.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="RelativeLayout的gravity和ignoreGravity">
-<meta name="twitter:description" content="RelativeLayout的gravity和ignoreGravityAndroid开发中使用最多的ViewGroup应该就是RelativeLayout了，虽然众所周知它在Measure的时候会测量两次子View，耗时会略微多一点，但是毕竟比其他布局更加灵活，熟练使用的话可以大大减少布局的嵌套，避免IDE提示你TooDeepLayout的时候才反应过来已经嵌套了太多的ViewGroup.
-使用">
+<meta name="twitter:description" content="Android开发中使用最多的ViewGroup应该就是RelativeLayout了，虽然众所周知它在Measure的时候会测量两次子View，耗时会略微多一点，但是毕竟比其他布局更加灵活，熟练使用的话可以大大减少布局的嵌套，避免IDE提示你TooDeepLayout的时候才反应过来已经嵌套了太多的ViewGroup.
+使用RelativeLayout的时候常用的应该就是给子View设置一些属性">
   
   
   <link rel="stylesheet" href="/css/style.css" type="text/css">
@@ -144,11 +144,10 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="RelativeLayout的gravity和ignoreGravity"><a href="#RelativeLayout的gravity和ignoreGravity" class="headerlink" title="RelativeLayout的gravity和ignoreGravity"></a>RelativeLayout的gravity和ignoreGravity</h2><p>Android开发中使用最多的ViewGroup应该就是RelativeLayout了，虽然众所周知它在Measure的时候会测量两次子View，耗时会略微多一点，但是毕竟比其他布局更加灵活，熟练使用的话可以大大减少布局的嵌套，避免IDE提示你<em>TooDeepLayout</em>的时候才反应过来已经嵌套了太多的ViewGroup.</p>
+        <p>Android开发中使用最多的ViewGroup应该就是RelativeLayout了，虽然众所周知它在Measure的时候会测量两次子View，耗时会略微多一点，但是毕竟比其他布局更加灵活，熟练使用的话可以大大减少布局的嵌套，避免IDE提示你<em>TooDeepLayout</em>的时候才反应过来已经嵌套了太多的ViewGroup.</p>
 <p>使用RelativeLayout的时候常用的应该就是给子View设置一些属性，例如子View相对于父Layout的<code>layout_centerInParent</code>,<code>layout_centerHorizontal</code>，<code>layout_alignParentTop</code>,<code>layout_alignParentLeft</code>等等这类属性，以及子View相对于其他子View的<code>layout_above</code>,<code>layout_toLeftOf</code>和类似的属性，常用RelativeLayout的开发者应该对这些属性都很熟悉了，能都做到熟练使用的话一般的布局应该都不成问题了.所以就不在这里废话了.今天总结的主要是RelativeLayout一个不太常见的属性–gravity（或者是我和周围的同事不太常用的）.</p>
 <h3 id="gravity属性"><a href="#gravity属性" class="headerlink" title="gravity属性"></a>gravity属性</h3><p>有一天你的PM让你实现一个界面，大概是这样：</p>
-<p><img src="~first.png" alt="gravity示例"></p>
-
+<p><img src="http://ww1.sinaimg.cn/large/a61009a8jw1f2acfpm06sj207s0cbq37.jpg" alt="gravity示例"></p>
 <p>要求是中间这几个button占用的空间不论button怎么变化始终都在父布局的中间.<br>看起来并不难，父布局用一个RelativeLayout,写一个width和height都为<code>wrap_content</code>的RelativeLayout设置属性<code>layout_centerInParent</code>为true.布局中second button放在first button的右边，third button放在first button下面。这样不论三个button大小怎么变，他们所占的空间始终是子布局的RelativeLayout的大小，所以始终在父布局的正中间.如果觉得性能不够好的话也可以把父布局设为FrameLayout,然后子RelativeLayout设置的属性为<code>layout_gravity=&quot;center&quot;</code>,也可以达到同样的效果.<br>代码如下：</p>
 <pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
 &lt;RelativeLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;
@@ -219,11 +218,11 @@
 &lt;/RelativeLayout&gt;
 </code></pre><p>一层ViewGroup,就达到了同样的效果~~</p>
 <p>这样使用的优势是什么呢？比如说如果在保持几个子View之间相对位置不变的情况下，要把这个整体放在父布局底部居中，如图：</p>
-<p><img src="RelativeLayout的gravity和ignoreGravity/second.png" alt="second"></p>
+<p><img src="http://ww2.sinaimg.cn/large/a61009a8jw1f2acgce67wj207s0cbmxf.jpg" alt="second"></p>
 <p>平时遇到这样的情况会怎么做呢？仍然是两层嵌套？或者是先定好third button的位置，再让其他两个View依赖于third button？似乎都不是很好的解决方案.而使用gravity的话只需要设定一个<code>gravity=&quot;bottom|center_horizontal&quot;</code>,效果就达到了~</p>
 <p>然而需求永远大于实现，这时候你的PM又说了，除了这个，还有一个单独的控件，要放在界面上不依赖其他控件，但依赖于父布局的位置.但是这时候我们已经给父布局设定了一个gravity了，看起来所有的子View都会被父布局的属性所影响，怎么解决呢？说实话我看了半天源码也不是很明白Google工程师是怎么想的，但是呢他们就是提供了这么一个属性<code>ignoreGravity</code>,猜也能猜出来，它能让gravity失效,还是用代码说话吧~</p>
 <p>比如布局是这样的：</p>
-<p><img src="RelativeLayout的gravity和ignoreGravity/third.png" alt="second"></p>
+<p><img src="http://ww1.sinaimg.cn/large/a61009a8jw1f2acgjrlo7j207s0cbglw.jpg" alt="second"></p>
 <p>代码如下：</p>
 <pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
 &lt;RelativeLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;
@@ -267,7 +266,7 @@
 <pre><code>if ((horizontalGravity || verticalGravity) &amp;&amp; mIgnoreGravity != View.NO_ID) {
            ignore = findViewById(mIgnoreGravity);
        }
-</code></pre><p>源码中，关于ignoreGravity比较关键的就这两句，写的很明白：只有在gravity不为<code>center_horizontal</code>也不为<code>center_vertical</code>的时候，这个ignoreGravity才能切实发挥作用，至于具体的原因，就得继续深扒Relativelayout的源码了，本人对Relativelayout的研究还是不够，所以不敢自己乱加猜测了.</p>
+</code></pre><p>源码中，关于ignoreGravity比较关键的就这两句，写的很明白：只有在gravity不为<code>center_horizontal</code>也不为<code>center_vertical</code>的时候，这个ignoreGravity才能切实发挥作用，至于具体的原因，就得继续深扒RelativeLayout的源码了，本人对RelativeLayout的研究还是不够，所以不敢自己乱加猜测了.</p>
 <p>当然了，如果子View只是互相依赖的话这样用就没问题，但是如果给子View使用了相对于父布局的一些属性的话可能会有一些冲突，这个就看大家使用的时候怎么取舍了，毕竟是一个不那么常用的属性.不过这个gravity也足够帮我们解决很多问题了吧.</p>
 
       
