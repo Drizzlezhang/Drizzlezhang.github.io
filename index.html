@@ -132,7 +132,8 @@
 <p>使用RelativeLayout的时候常用的应该就是给子View设置一些属性，例如子View相对于父Layout的<code>layout_centerInParent</code>,<code>layout_centerHorizontal</code>，<code>layout_alignParentTop</code>,<code>layout_alignParentLeft</code>等等这类属性，以及子View相对于其他子View的<code>layout_above</code>,<code>layout_toLeftOf</code>和类似的属性，常用RelativeLayout的开发者应该对这些属性都很熟悉了，能都做到熟练使用的话一般的布局应该都不成问题了.所以就不在这里废话了.今天总结的主要是RelativeLayout一个不太常见的属性–gravity（或者是我和周围的同事不太常用的）.</p>
 <h3 id="gravity属性"><a href="#gravity属性" class="headerlink" title="gravity属性"></a>gravity属性</h3><p>有一天你的PM让你实现一个界面，大概是这样：</p>
 <p><img src="http://ww1.sinaimg.cn/large/a61009a8jw1f2acfpm06sj207s0cbq37.jpg" alt="gravity示例"></p>
-<p>要求是中间这几个button占用的空间不论button怎么变化始终都在父布局的中间.<br>看起来并不难，父布局用一个RelativeLayout,写一个width和height都为<code>wrap_content</code>的RelativeLayout设置属性<code>layout_centerInParent</code>为true.布局中second button放在first button的右边，third button放在first button下面。这样不论三个button大小怎么变，他们所占的空间始终是子布局的RelativeLayout的大小，所以始终在父布局的正中间.如果觉得性能不够好的话也可以把父布局设为FrameLayout,然后子RelativeLayout设置的属性为<code>layout_gravity=&quot;center&quot;</code>,也可以达到同样的效果.<br>代码如下：</p>
+<p>要求是中间这几个button占用的空间不论button怎么变化始终都在父布局的中间.</p>
+<p>看起来并不难，父布局用一个RelativeLayout,写一个width和height都为<code>wrap_content</code>的RelativeLayout设置属性<code>layout_centerInParent</code>为true.布局中second button放在first button的右边，third button放在first button下面。这样不论三个button大小怎么变，他们所占的空间始终是子布局的RelativeLayout的大小，所以始终在父布局的正中间.如果觉得性能不够好的话也可以把父布局设为FrameLayout,然后子RelativeLayout设置的属性为<code>layout_gravity=&quot;center&quot;</code>,也可以达到同样的效果.<br>代码如下：</p>
 <h4 id="main-xml"><a href="#main-xml" class="headerlink" title="main.xml"></a>main.xml</h4><pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
 &lt;RelativeLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;
  android:layout_width=&quot;match_parent&quot;
