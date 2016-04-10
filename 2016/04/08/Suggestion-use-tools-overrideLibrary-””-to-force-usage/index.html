@@ -7,18 +7,18 @@
   <title>Suggestion: use tools:overrideLibrary=”” to force usage | Drizzlezhang&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="Android开发在build的时候有时会报如下错误：
-1Error:Execution failed for task &amp;#8216;:app:processProductDebugManifest&amp;#8217;.&amp;#10;&amp;#62;Manifest merger failed : uses-sdk:minSdkVersion 14 cannot be smaller than version">
+1Error:Execution failed for task &amp;#8216;:app:processProductDebugManifest&amp;#8217;.&amp;#10;Manifest merger failed : uses-sdk : minSdkVersion 14 cannot be smaller than version 18">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Suggestion: use tools:overrideLibrary=”” to force usage">
 <meta property="og:url" content="http://yoursite.com/2016/04/08/Suggestion-use-tools-overrideLibrary-””-to-force-usage/index.html">
 <meta property="og:site_name" content="Drizzlezhang's blog">
 <meta property="og:description" content="Android开发在build的时候有时会报如下错误：
-1Error:Execution failed for task &amp;#8216;:app:processProductDebugManifest&amp;#8217;.&amp;#10;&amp;#62;Manifest merger failed : uses-sdk:minSdkVersion 14 cannot be smaller than version">
-<meta property="og:updated_time" content="2016-04-10T05:00:50.000Z">
+1Error:Execution failed for task &amp;#8216;:app:processProductDebugManifest&amp;#8217;.&amp;#10;Manifest merger failed : uses-sdk : minSdkVersion 14 cannot be smaller than version 18">
+<meta property="og:updated_time" content="2016-04-10T05:10:55.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Suggestion: use tools:overrideLibrary=”” to force usage">
 <meta name="twitter:description" content="Android开发在build的时候有时会报如下错误：
-1Error:Execution failed for task &amp;#8216;:app:processProductDebugManifest&amp;#8217;.&amp;#10;&amp;#62;Manifest merger failed : uses-sdk:minSdkVersion 14 cannot be smaller than version">
+1Error:Execution failed for task &amp;#8216;:app:processProductDebugManifest&amp;#8217;.&amp;#10;Manifest merger failed : uses-sdk : minSdkVersion 14 cannot be smaller than version 18">
   
   
   <link rel="stylesheet" href="/css/style.css" type="text/css">
@@ -142,7 +142,7 @@
     <div class="article-entry" itemprop="articleBody">
       
         <p>Android开发在build的时候有时会报如下错误：</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Error:Execution failed for task &#8216;:app:processProductDebugManifest&#8217;.&#10;&#62;Manifest merger failed : uses-sdk:minSdkVersion 14 cannot be smaller than version 18 declared in library......&#10;Suggestion: use tools:overrideLibrary=&#8221;xx.xxx.xx&#8221; to force usage</span><br></pre></td></tr></table></figure>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Error:Execution failed for task &#8216;:app:processProductDebugManifest&#8217;.&#10;Manifest merger failed : uses-sdk : minSdkVersion 14 cannot be smaller than version 18 declared in library......&#10;Suggestion: use tools:overrideLibrary=&#8221;xx.xxx.xx&#8221; to force usage</span><br></pre></td></tr></table></figure>
 <p>错误原因是当前的Build Variant(<em>即错误提示中的ProductDebug</em>)的<code>minSdkVersion</code>小于它所依赖的包的<code>minSdkVersion</code>，所以报了这个错。解决方案就像Suggestion告诉的，在对应的<code>AndroidManifest.xml</code>文件里添加一个<code>&lt;uses-sdk tools:overrideLibrary=&quot;xxx.xxx.xxx&quot;/&gt;</code>的标签，中间填上报错的依赖库的包名，如果有多个这样的依赖库的话就填多个包名，用逗号分开。</p>
 <p>前面是遇到这个问题常用的解决方法，但是在有些情况下得注意这个标签是否填对了地方。比如在项目有多个variant时，会针对不同的variant有不同的包，不同的包的依赖也是不同的，那么就应该针对某个包写一个单独的<code>AndroidManifest.xml</code>来解决前面那种问题。一般情况下这样解决了之后就不会有问题了。</p>
 <p>但是还有特殊情况。比如针对不同的flavor做了两个针对的test包，<code>androidTestFlavor1</code>和<code>androidTestFlavor2</code>，并且配置了<code>minSdkVersion</code>有冲突的依赖，而<code>androidTest</code>包没有有效代码所以被删掉了。这时候即使按照前面的解决方案给<code>androidTestFlavor1</code>和<code>androidTestFlavor2</code>对应的<code>AndroidManifest.xml</code>配置了<code>tools:overrideLibrary</code>，在Build的时候还是会报如下错：</p>
