@@ -14,7 +14,7 @@ Transition API中，出现了诸如场景（Scene）、场景过渡（Transition
 <meta property="og:site_name" content="Drizzlezhang's blog">
 <meta property="og:description" content="Transition从Android 4.4 KitKat开始，有了Transitions API，在兼容包中也有Transitions API，因此可以在几乎所有的安卓设备上使用。  
 Transition API中，出现了诸如场景（Scene）、场景过渡（Transition）这样的概念，场景本质上是对ViewGroup的一层封装，描述了自己以及所有View对象的的状态。而过渡（Transit">
-<meta property="og:updated_time" content="2016-04-27T05:04:10.000Z">
+<meta property="og:updated_time" content="2016-04-27T06:32:47.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android Transitions">
 <meta name="twitter:description" content="Transition从Android 4.4 KitKat开始，有了Transitions API，在兼容包中也有Transitions API，因此可以在几乎所有的安卓设备上使用。  
@@ -184,6 +184,14 @@ Transition API中，出现了诸如场景（Scene）、场景过渡（Transition
 <p>3.framework将B中所有的transitioning view设置为VISIBLE。</p>
 <p>4.B的enter transition捕获到B中transitioning view的结束状态。</p>
 <p>5.B的enter transition比较每个transitioning view的开始和结束状态，然后根据前后状态的区别创建一个Animator。Animator开始运行，同时transitioning view进入场景。</p>
+</li>
+</ul>
+<h4 id="Fragment的切换"><a href="#Fragment的切换" class="headerlink" title="Fragment的切换"></a>Fragment的切换</h4><ul>
+<li><p>Content的exit, enter, reenter, 和return transition需要调用fragment的相应方法来设置，或者通过fragment的xml属性来设置。</p>
+</li>
+<li><p>共享元素的enter和return transition也n需要调用fragment的相应方法来设置，或者通过fragment的xml属性来设置。</p>
+</li>
+<li><p>在Fragment commit之前，共享元素需要通过调用<code>addSharedElement(View, String)</code> 方法来成为FragmentTransaction的一部分。</p>
 </li>
 </ul>
 <h4 id="自定义Content-Transition"><a href="#自定义Content-Transition" class="headerlink" title="自定义Content Transition"></a>自定义Content Transition</h4><p>   可以借鉴Android中已有的实现Fade,Slide,Explode</p>
