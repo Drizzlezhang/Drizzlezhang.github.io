@@ -6,16 +6,19 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <title>Android Transitions | Drizzlezhang&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="张毛雨的Blog">
+  <meta name="description" content="Transition从Android 4.4 KitKat开始，有了Transitions API，在兼容包中也有Transitions API，因此可以在几乎所有的安卓设备上使用。  
+Transition API中，出现了诸如场景（Scene）、场景过渡（Transition）这样的概念，场景本质上是对ViewGroup的一层封装，描述了自己以及所有View对象的的状态。而过渡（Transit">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Android Transitions">
 <meta property="og:url" content="http://yoursite.com/2016/04/24/Android-Transitions/index.html">
 <meta property="og:site_name" content="Drizzlezhang's blog">
-<meta property="og:description" content="张毛雨的Blog">
-<meta property="og:updated_time" content="2016-04-24T05:26:19.000Z">
+<meta property="og:description" content="Transition从Android 4.4 KitKat开始，有了Transitions API，在兼容包中也有Transitions API，因此可以在几乎所有的安卓设备上使用。  
+Transition API中，出现了诸如场景（Scene）、场景过渡（Transition）这样的概念，场景本质上是对ViewGroup的一层封装，描述了自己以及所有View对象的的状态。而过渡（Transit">
+<meta property="og:updated_time" content="2016-04-27T05:04:10.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android Transitions">
-<meta name="twitter:description" content="张毛雨的Blog">
+<meta name="twitter:description" content="Transition从Android 4.4 KitKat开始，有了Transitions API，在兼容包中也有Transitions API，因此可以在几乎所有的安卓设备上使用。  
+Transition API中，出现了诸如场景（Scene）、场景过渡（Transition）这样的概念，场景本质上是对ViewGroup的一层封装，描述了自己以及所有View对象的的状态。而过渡（Transit">
   
   
   <link rel="stylesheet" href="/css/style.css" type="text/css">
@@ -138,7 +141,54 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <h2 id="Transition"><a href="#Transition" class="headerlink" title="Transition"></a>Transition</h2><p>从Android 4.4 KitKat开始，有了Transitions API，在兼容包中也有Transitions API，因此可以在几乎所有的安卓设备上使用。  </p>
+<p>Transition API中，出现了诸如场景（Scene）、场景过渡（Transition）这样的概念，场景本质上是对ViewGroup的一层封装，描述了自己以及所有View对象的的状态。而过渡（Transition）则是一种这样的机制：读取不同场景之间View属性的变化，从而产生让这种变化看起来平滑的动画。</p>
+<p>当一个场景改变的时候，transition主要负责：</p>
+<p>（1）捕捉每个View在开始场景和结束场景时的状态。</p>
+<p>（2）根据两个场景（开始和结束）之间的区别创建一个Animator。</p>
+<p>Transition API提供的特色有：</p>
+<blockquote>
+<p>组级别的动画：可以将整个View树作为整体动画，你只需指定ViewGroup，它的各个元素就会自动应用动画<br>内置动画：内置简单的动画，比如dissolution，darkening，resizing，movement等等。<br>对资源文件的支持：你可以不必写代码，在资源文件中创建动画。<br>回调：提供掌控动画过程的所有必要的回调方法。  </p>
+</blockquote>
+<p>缺点：  </p>
+<blockquote>
+<p>在那些不在UI线程中工作的View，比如SurfaceView或者TextureView中使用的时候不流畅。<br>AdapterView，比如ListView，当你需要针对列表中某个单独的元素使用动画的时候。<br>偶尔会在resize TextView的时候会出现同步的问题：在另一个对象的改变结束的之前，字体会提前出现在下一个场景中。</p>
+</blockquote>
+<h4 id="Activity的切换"><a href="#Activity的切换" class="headerlink" title="Activity的切换"></a>Activity的切换</h4><p>首先在<code>setContentView</code>之前调用<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);</span><br></pre></td></tr></table></figure></p>
+<p>或者在Activity对应的主题里设置<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">item</span> <span class="attribute">name</span>=<span class="value">"android:windowContentTransitions"</span>&gt;</span>true<span class="tag">&lt;/<span class="title">item</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>设置元素切换动画的方式<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="title">item</span> <span class="attribute">name</span>=<span class="value">"android:windowSharedElementEnterTransition"</span>&gt;</span>@android:transition/move<span class="tag">&lt;/<span class="title">item</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="title">item</span> <span class="attribute">name</span>=<span class="value">"android:windowSharedElementExitTransition"</span>&gt;</span>@android:transition/move<span class="tag">&lt;/<span class="title">item</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>销毁Activity</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">finishAfterTransition();</span><br></pre></td></tr></table></figure>
+<p>设置非共享元素的动画</p>
+<ul>
+<li><p>(1)setExitTransition() - 当A start B时，使A中的View退出场景的transition  </p>
+</li>
+<li><p>(2)setEnterTransition() - 当A start B时，使B中的View进入场景的transition  </p>
+</li>
+<li><p>(3)setReturnTransition() - 当B 返回 A时，使B中的View退出场景的transition  </p>
+</li>
+<li><p>(4)setReenterTransition() - 当B 返回 A时，使A中的View进入场景的transition  </p>
+</li>
+</ul>
+<h4 id="Content-Transition"><a href="#Content-Transition" class="headerlink" title="Content Transition"></a>Content Transition</h4><ul>
+<li><p>Activity A 调用startActivity().</p>
+<p>1.framework遍历A的View树，确定当A的exit transition运行时哪些view会退出场景（即哪些view是transitioning view）。</p>
+<p>2.A的exit transition捕获A中transitioning view的开始状态。</p>
+<p>3.framework将A中所有的transitioning view设置为INVISIBLE。</p>
+<p>4.A的exit transition捕获到A中transitioning view的结束状态。</p>
+<p>5.A的exit transition比较每个transitioning view的开始和结束状态，然后根据前后状态的区别创建一个Animator。Animator开始运行，同时transitioning view退出场景。</p>
+</li>
+<li><p>Activity B启动.</p>
+<p>1.framework遍历B的View树，确定当B的enter transition运行时哪些view会进入场景，transitioning view会被初始化为INVISIBLE。</p>
+<p>2.B的enter transition捕获B中transitioning view的开始状态。</p>
+<p>3.framework将B中所有的transitioning view设置为VISIBLE。</p>
+<p>4.B的enter transition捕获到B中transitioning view的结束状态。</p>
+<p>5.B的enter transition比较每个transitioning view的开始和结束状态，然后根据前后状态的区别创建一个Animator。Animator开始运行，同时transitioning view进入场景。</p>
+</li>
+</ul>
+<h4 id="自定义Content-Transition"><a href="#自定义Content-Transition" class="headerlink" title="自定义Content Transition"></a>自定义Content Transition</h4><p>   可以借鉴Android中已有的实现Fade,Slide,Explode</p>
+<h4 id="Reveal"><a href="#Reveal" class="headerlink" title="Reveal"></a>Reveal</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ViewAnimationUtils.createCircularReveal(View view,<span class="keyword">int</span> centerX,  <span class="keyword">int</span> centerY, <span class="keyword">float</span> startRadius, <span class="keyword">float</span> endRadius)</span><br></pre></td></tr></table></figure>
+
       
     </div>
     
