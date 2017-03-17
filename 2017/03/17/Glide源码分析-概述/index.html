@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" >
+  <title>Glide源码分析_概述 | Drizzlezhang&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="基本概念  项目地址：https://github.com/bumptech/glide  基于Glide当前的稳定版本3.7.0
+基本流程
+大的流程与其他的图片加载库没有本质区别，都是构建一个图片加载请求，然后通过Engine先从内存缓存中获取数据，如果命中缓存则直接回调主线程并对View层进行对应处理；如果未命中缓存，则调起一个DecodeJob请求原始数据，先请求磁盘缓存，未命中则进行网络请">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Glide源码分析_概述">
+<meta property="og:url" content="http://yoursite.com/2017/03/17/Glide源码分析-概述/index.html">
+<meta property="og:site_name" content="Drizzlezhang's blog">
+<meta property="og:description" content="基本概念  项目地址：https://github.com/bumptech/glide  基于Glide当前的稳定版本3.7.0
+基本流程
+大的流程与其他的图片加载库没有本质区别，都是构建一个图片加载请求，然后通过Engine先从内存缓存中获取数据，如果命中缓存则直接回调主线程并对View层进行对应处理；如果未命中缓存，则调起一个DecodeJob请求原始数据，先请求磁盘缓存，未命中则进行网络请">
+<meta property="og:image" content="http://i1.piimg.com/567571/8abbb8f9c56f6862.jpg">
+<meta property="og:image" content="http://i1.piimg.com/567571/787776846350f1b3.jpg">
+<meta property="og:updated_time" content="2017-03-17T08:14:05.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Glide源码分析_概述">
+<meta name="twitter:description" content="基本概念  项目地址：https://github.com/bumptech/glide  基于Glide当前的稳定版本3.7.0
+基本流程
+大的流程与其他的图片加载库没有本质区别，都是构建一个图片加载请求，然后通过Engine先从内存缓存中获取数据，如果命中缓存则直接回调主线程并对View层进行对应处理；如果未命中缓存，则调起一个DecodeJob请求原始数据，先请求磁盘缓存，未命中则进行网络请">
+  
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img src="http://ww3.sinaimg.cn/large/a61009a8jw1f2be34ug4rj208i08idg0.jpg" class="js-avatar" style="width: 100%;height: 100%;opacity: 1;">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">Drizzle Zhang</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">野蛮生长，不忘初心</p>
+		
+
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+						</div>
+					</nav>
+				</section>
+				
+				
+				
+				
+
+				
+			</div>
+		</div>
+	</header>				
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">Drizzle Zhang</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+			
+				<img src="http://ww3.sinaimg.cn/large/a61009a8jw1f2be34ug4rj208i08idg0.jpg" class="js-avatar" style="width: 100%;height: 100%;opacity: 1;">
+			
+			</div>
+			<hgroup>
+			  <h1 class="header-author">Drizzle Zhang</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">野蛮生长，不忘初心</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap"><article id="_post-Glide源码分析-概述" class="article article-type-_post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2017/03/17/Glide源码分析-概述/" class="article-date">
+  	<time datetime="2017-03-17T08:12:19.000Z" itemprop="datePublished">2017-03-17</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Glide源码分析_概述
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android-Glide/">Android, Glide</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h3><p>  项目地址：<a href="https://github.com/bumptech/glide" target="_blank" rel="external">https://github.com/bumptech/glide</a><br>  基于Glide当前的稳定版本3.7.0</p>
+<h3 id="基本流程"><a href="#基本流程" class="headerlink" title="基本流程"></a>基本流程</h3><p><img src="http://i1.piimg.com/567571/8abbb8f9c56f6862.jpg" alt="glide_process"></p>
+<p>大的流程与其他的图片加载库没有本质区别，都是构建一个图片加载请求，然后通过<strong>Engine</strong>先从内存缓存中获取数据，如果命中缓存则直接回调主线程并对View层进行对应处理；如果未命中缓存，则调起一个<strong>DecodeJob</strong>请求原始数据，先请求磁盘缓存，未命中则进行网络请求，最终将结果回调主线程。</p>
+<h3 id="类设计图"><a href="#类设计图" class="headerlink" title="类设计图"></a>类设计图</h3><p><img src="http://i1.piimg.com/567571/787776846350f1b3.jpg" alt="glide_class"></p>
+<h2 id="主要组件的概念"><a href="#主要组件的概念" class="headerlink" title="主要组件的概念"></a>主要组件的概念</h2><h3 id="Glide-入口类"><a href="#Glide-入口类" class="headerlink" title="Glide 入口类"></a><code>Glide</code> 入口类</h3><h4 id="Glide"><a href="#Glide" class="headerlink" title="Glide"></a><code>Glide</code></h4><ul>
+<li>向外暴露单例静态接口，通过传入的<code>Context</code>构建RequestManager</li>
+<li>持有一些内存变量BitmapPool，MemoryCache，便于外界调用清理缓存</li>
+<li>同时在构造方法里完成<code>GenericLoaderFactory</code>、<code>TranscoderRegisty</code>和<code>DataLoaderRegisty</code>对多种数据和资源类型的注册（这几个类的作用后面分析）</li>
+</ul>
+<h4 id="GlideBuilder"><a href="#GlideBuilder" class="headerlink" title="GlideBuilder"></a><code>GlideBuilder</code></h4><ul>
+<li>构建<code>Glide</code>对象，配置默认的缓存策略和图片解码格式</li>
+</ul>
+<h3 id="RequestManager-请求管理类"><a href="#RequestManager-请求管理类" class="headerlink" title="RequestManager 请求管理类"></a><code>RequestManager</code> 请求管理类</h3><h4 id="RequestManager"><a href="#RequestManager" class="headerlink" title="RequestManager"></a><code>RequestManager</code></h4><ul>
+<li>通过<code>load</code>系列方法，构建具体的请求</li>
+<li>通过持有的<code>RequestTracker</code>对象管理当前<code>RequestManager</code>下所有请求的生命周期</li>
+</ul>
+<h4 id="RequestTracker"><a href="#RequestTracker" class="headerlink" title="RequestTracker"></a><code>RequestTracker</code></h4><ul>
+<li>对具体请求的行为进行管理</li>
+</ul>
+<h4 id="RequestManagerRetriever"><a href="#RequestManagerRetriever" class="headerlink" title="RequestManagerRetriever"></a><code>RequestManagerRetriever</code></h4><ul>
+<li>单例，通过传入的<code>Context</code>或<code>Fragment</code>获取对应的<code>RequestManager</code></li>
+</ul>
+<h3 id="Request-请求类"><a href="#Request-请求类" class="headerlink" title="Request 请求类"></a><code>Request</code> 请求类</h3><ul>
+<li>持有一个具体请求的所有信息，包括所有主动行为和状态的回调，通过<code>Engine</code>进行具体的数据请求，同时将回调结果通知<code>Target</code></li>
+</ul>
+<h3 id="Engine-引擎类"><a href="#Engine-引擎类" class="headerlink" title="Engine 引擎类"></a><code>Engine</code> 引擎类</h3><h4 id="Engine"><a href="#Engine" class="headerlink" title="Engine"></a><code>Engine</code></h4><ul>
+<li>请求数据并拿到回调结果</li>
+<li>请求数据分为三步：先请求内存缓存<code>MemoryCache</code>，未命中则继续请求<code>activeResources</code>（具体会在缓存部分分析），仍然未命中则会调起一个<code>EngineRunnable</code>，开启一个线程进行具体请求</li>
+</ul>
+<h4 id="EngineRunnable"><a href="#EngineRunnable" class="headerlink" title="EngineRunnable"></a><code>EngineRunnable</code></h4><ul>
+<li>实现了<code>Runnable</code>接口，用<code>DecodeJob</code>进行数据请求并将回调传递给<code>EngineJob</code></li>
+</ul>
+<h4 id="EngineJob"><a href="#EngineJob" class="headerlink" title="EngineJob"></a><code>EngineJob</code></h4><ul>
+<li>管理对应<code>Engine</code>所有请求的<code>ResourceCallback</code></li>
+</ul>
+<h3 id="DecodeJob-原始对象处理类"><a href="#DecodeJob-原始对象处理类" class="headerlink" title="DecodeJob 原始对象处理类"></a><code>DecodeJob</code> 原始对象处理类</h3><h4 id="DecodeJob"><a href="#DecodeJob" class="headerlink" title="DecodeJob"></a><code>DecodeJob</code></h4><ul>
+<li>进行具体取数据和数据转换的操作，包括从磁盘缓存和通过网络请求拿到原始数据，并将原始数据通过<code>ResourceDecoder</code>、<code>Transformation</code>和<code>ResourceTranscoder</code>转换成最终<code>Target</code>需要的数据类型</li>
+<li>在通过网络请求拿到数据后也进行了写入磁盘缓存的操作</li>
+</ul>
+<h3 id="Cache缓存部分"><a href="#Cache缓存部分" class="headerlink" title="Cache缓存部分"></a><code>Cache</code>缓存部分</h3><h4 id="MemoryCache内存缓存接口"><a href="#MemoryCache内存缓存接口" class="headerlink" title="MemoryCache内存缓存接口"></a><code>MemoryCache</code>内存缓存接口</h4><ul>
+<li>资源被释放时写入，在<code>Engine</code>类里从内存中获取数据时查询</li>
+</ul>
+<h4 id="DishCache磁盘缓存接口"><a href="#DishCache磁盘缓存接口" class="headerlink" title="DishCache磁盘缓存接口"></a><code>DishCache</code>磁盘缓存接口</h4><ul>
+<li><code>DecodeJob</code>从磁盘中获取数据时查询，请求网络拿到原始数据时写入</li>
+</ul>
+<h4 id="BitmapPool接口"><a href="#BitmapPool接口" class="headerlink" title="BitmapPool接口"></a><code>BitmapPool</code>接口</h4><ul>
+<li>设计思路是根据尺寸和属性缓存理论上会被重复使用的<code>Bitmap</code>对象，在有新的加载过程要用到同样的<code>Bitmap</code>时避免重复创建<code>Bitmap</code>,在<code>RecyclerView</code>这种会有大量可复用的相同尺寸和属性<code>Bitmap</code>的场景下效果明显</li>
+<li>在<code>Transformation</code>中构建Bitmap时查询，在任意位置的<code>Bitmap</code>对象准备被释放时缓存</li>
+</ul>
+<h4 id="Engine中的activeResources"><a href="#Engine中的activeResources" class="headerlink" title="Engine中的activeResources"></a><code>Engine</code>中的<code>activeResources</code></h4><ul>
+<li>这是一个弱引用的内存缓存，当<code>MemoryCache</code>中的缓存因为某些情况被remove掉时，会再在这个内存缓存里查询一次，</li>
+</ul>
+<h3 id="可扩展接口"><a href="#可扩展接口" class="headerlink" title="可扩展接口"></a>可扩展接口</h3><h3 id="ModelLoader和对应的DataFetcher"><a href="#ModelLoader和对应的DataFetcher" class="headerlink" title="ModelLoader和对应的DataFetcher"></a><code>ModelLoader</code>和对应的<code>DataFetcher</code></h3><ul>
+<li>可以配置自己的网络请求和数据类型</li>
+</ul>
+<h3 id="Transformation接口"><a href="#Transformation接口" class="headerlink" title="Transformation接口"></a><code>Transformation</code>接口</h3><ul>
+<li>可以配置自己的<code>Bitmap</code>或者其他类型数据的处理方案，默认的<code>centerCrop()</code>和<code>fitCenter</code>方法都是实现了具体的<code>Transformation</code>接口</li>
+</ul>
+<h3 id="Target接口"><a href="#Target接口" class="headerlink" title="Target接口"></a><code>Target</code>接口</h3><ul>
+<li>可以配置更复杂的View或其他业务层组件，<code>Glide</code>负责管理请求、缓存和数据转换。</li>
+</ul>
+<p><code>Glide</code>主要的类和接口基本就是这些，通过这些接口的关系我们已经基本能知道<code>Glide</code>进行一次完成的图片数据请求以及加载到View的过程了。</p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2016/08/10/毕业两年/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">毕业两年</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2017 Drizzle Zhang
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+
+<script>
+	var yiliaConfig = {
+		fancybox: undefined,
+		mathjax: undefined,
+		animate: undefined,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: undefined
+	}
+</script>
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="/js/main.js" type="text/javascript"></script>
+
+
+
+
+
+
+  </div>
+</body>
+</html>
