@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" >
+  <title>Glide源码分析-生命周期管理 | Drizzlezhang&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="基本概念Glide与Picasso有着基本一致的使用方法，最基本的使用方式如下：
+1234Glide.with(Context/Activity/Fragment).load(url).into(view);Picasso.with(Context).load(url).into(view);
+但是我们从代码中能看到，Glide比较特殊的地方时可以传入Context、Activity、Fragme">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Glide源码分析-生命周期管理">
+<meta property="og:url" content="http://yoursite.com/2017/03/18/Glide源码分析-生命周期管理/index.html">
+<meta property="og:site_name" content="Drizzlezhang's blog">
+<meta property="og:description" content="基本概念Glide与Picasso有着基本一致的使用方法，最基本的使用方式如下：
+1234Glide.with(Context/Activity/Fragment).load(url).into(view);Picasso.with(Context).load(url).into(view);
+但是我们从代码中能看到，Glide比较特殊的地方时可以传入Context、Activity、Fragme">
+<meta property="og:image" content="http://i1.piimg.com/567571/91a11d998864fea7.jpg">
+<meta property="og:updated_time" content="2017-03-18T13:30:17.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Glide源码分析-生命周期管理">
+<meta name="twitter:description" content="基本概念Glide与Picasso有着基本一致的使用方法，最基本的使用方式如下：
+1234Glide.with(Context/Activity/Fragment).load(url).into(view);Picasso.with(Context).load(url).into(view);
+但是我们从代码中能看到，Glide比较特殊的地方时可以传入Context、Activity、Fragme">
+  
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img src="http://ww3.sinaimg.cn/large/a61009a8jw1f2be34ug4rj208i08idg0.jpg" class="js-avatar" style="width: 100%;height: 100%;opacity: 1;">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">Drizzle Zhang</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">野蛮生长，不忘初心</p>
+		
+
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+						</div>
+					</nav>
+				</section>
+				
+				
+				
+				
+
+				
+			</div>
+		</div>
+	</header>				
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">Drizzle Zhang</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+			
+				<img src="http://ww3.sinaimg.cn/large/a61009a8jw1f2be34ug4rj208i08idg0.jpg" class="js-avatar" style="width: 100%;height: 100%;opacity: 1;">
+			
+			</div>
+			<hgroup>
+			  <h1 class="header-author">Drizzle Zhang</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">野蛮生长，不忘初心</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap"><article id="_post-Glide源码分析-生命周期管理" class="article article-type-_post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2017/03/18/Glide源码分析-生命周期管理/" class="article-date">
+  	<time datetime="2017-03-18T12:00:41.000Z" itemprop="datePublished">2017-03-18</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Glide源码分析-生命周期管理
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/">Android</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h3><p><code>Glide</code>与<code>Picasso</code>有着基本一致的使用方法，最基本的使用方式如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">Glide.with(Context/Activity/Fragment).load(url).into(view);</span><br><span class="line"></span><br><span class="line">Picasso.with(Context).load(url).into(view);</span><br></pre></td></tr></table></figure>
+<p>但是我们从代码中能看到，<code>Glide</code>比较特殊的地方时可以传入<code>Context</code>、<code>Activity</code>、<code>Fragment</code>三种不同的对象作为上下文，这也是<code>Glide</code>第一个比较突出的特点，就是严格使用的话，加载图片的过程会绑定对应页面的生命周期，尽可能地提升加载效率。</p>
+<h3 id="生命周期绑定基本流程"><a href="#生命周期绑定基本流程" class="headerlink" title="生命周期绑定基本流程"></a>生命周期绑定基本流程</h3><p><img src="http://i1.piimg.com/567571/91a11d998864fea7.jpg" alt="生命周期绑定类设计图"></p>
+<h3 id="相关类的介绍"><a href="#相关类的介绍" class="headerlink" title="相关类的介绍"></a>相关类的介绍</h3><ul>
+<li><code>Glide</code>:总入口类，调用<code>with(Context/Activity/Fragment)</code>方法获取对应的<code>RequestManager</code></li>
+<li><code>RequestManagerRetriever</code>:单例，根据<code>Glide.with()</code>方法传入的上下文构建<code>RequestManager</code>和对应的<code>RequestManagerFragment</code>并进行生命周期的绑定</li>
+<li><code>RequestManagerFragment</code>:一个无页面的<code>Fragment</code>，与<code>Glide</code>传入的<code>Activity</code>或者<code>Fragment</code>通过<code>FragmentManager</code>完成与加载请求生命周期的绑定，同时持有对应所有上下文的<code>RequestManager</code>，当生命周期改变时时回调对应的生命周期方法</li>
+<li><code>LifecycleListener</code>:生命周期回调接口，当对应的生命周期发生变化时收到通知</li>
+<li><code>Lifecycle</code>:生命周期接口，所有类型的<code>RequestManagerFragment</code>都持有该接口的实现类<code>ActivityFragmentLifecycle</code>，<code>RequestManagerFragment</code>的生命周期发生变化时回调对应的方法</li>
+<li><code>RequestManager</code>:实现了<code>LifecycleListener</code>接口，收到生命周期变化回调时调用持有的<code>Ruquest</code>的对应方法</li>
+</ul>
+<h3 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h3><p>只分析类的作用是不够的，不看代码根本解释不清楚。然后我们就以一个基本的<code>Glide</code>请求为例，看看在构建<code>Request</code>之前都发生了什么。<br>首先是<code>Glide.with()</code>方法，以<code>Glide.with(fragment)</code>为例</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> RequestManager <span class="title">with</span><span class="params">(Fragment fragment)</span> </span>&#123;</span><br><span class="line">    RequestManagerRetriever retriever = RequestManagerRetriever.get();</span><br><span class="line">    <span class="keyword">return</span> retriever.get(fragment);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>只看到是生成一个<code>RequestManagerRetriever</code>对象，然后调用对应的<code>get(fragment)</code>方法，那么我们再看这部分源码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> RequestManagerRetriever INSTANCE = <span class="keyword">new</span> RequestManagerRetriever();</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> RequestManagerRetriever <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> INSTANCE;</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"> <span class="function"><span class="keyword">public</span> RequestManager <span class="title">get</span><span class="params">(Fragment fragment)</span> </span>&#123;</span><br><span class="line">     <span class="keyword">if</span> (fragment.getActivity() == <span class="keyword">null</span>) &#123;</span><br><span class="line">         <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"You cannot start a load on a fragment before it is attached"</span>);</span><br><span class="line">     &#125;</span><br><span class="line">     <span class="keyword">if</span> (Util.isOnBackgroundThread()) &#123;</span><br><span class="line">         <span class="keyword">return</span> get(fragment.getActivity().getApplicationContext());</span><br><span class="line">     &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">         FragmentManager fm = fragment.getChildFragmentManager();</span><br><span class="line">         <span class="keyword">return</span> supportFragmentGet(fragment.getActivity(), fm);</span><br><span class="line">     &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<p>首先<code>get()</code>方法很简单，就是一个单例模式。然后是<code>get(fragment)</code>方法，我们只看<code>fragment</code>可用的情况，这时候首先拿到那个<code>fragment</code>对应的<code>FragmentManager</code>，然后再返回<code>supportFragmentGet</code>方法，那么再看这部分源码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function">RequestManager <span class="title">supportFragmentGet</span><span class="params">(Context context, FragmentManager fm)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//获取当前请求上下文对应FragmentManager内部用于绑定生命周期的RequestManagerFragment</span></span><br><span class="line">    SupportRequestManagerFragment current = getSupportRequestManagerFragment(fm);</span><br><span class="line">    <span class="comment">//获取RequestManagerFragment内部绑定的RequestManager</span></span><br><span class="line">    RequestManager requestManager = current.getRequestManager();</span><br><span class="line">    <span class="keyword">if</span> (requestManager == <span class="keyword">null</span>) &#123;</span><br><span class="line">      <span class="comment">//如果为空，则new一个RequestManager，并完成生命周期回调方法的互相绑定</span></span><br><span class="line">        requestManager = <span class="keyword">new</span> RequestManager(context, current.getLifecycle(), current.getRequestManagerTreeNode());</span><br><span class="line">        current.setRequestManager(requestManager);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> requestManager;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> String FRAGMENT_TAG = <span class="string">"com.bumptech.glide.manager"</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//以FragmentManager为key，RequestManagerFragment为value缓存用以绑定寿命周期的RequestManagerFragment，严格说这不是一个缓存，只是用来暂时保存已生成的还未被使用的RequestManagerFragment</span></span><br><span class="line"><span class="keyword">final</span> Map&lt;FragmentManager, SupportRequestManagerFragment&gt; pendingSupportRequestManagerFragments =</span><br><span class="line">        <span class="keyword">new</span> HashMap&lt;FragmentManager, SupportRequestManagerFragment&gt;();</span><br><span class="line"></span><br><span class="line"><span class="function">SupportRequestManagerFragment <span class="title">getSupportRequestManagerFragment</span><span class="params">(<span class="keyword">final</span> FragmentManager fm)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//先从FragmentManager根据TAG获取RequestManagerFragment</span></span><br><span class="line">    SupportRequestManagerFragment current = (SupportRequestManagerFragment) fm.findFragmentByTag(FRAGMENT_TAG);</span><br><span class="line">    <span class="keyword">if</span> (current == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="comment">//如果为空，再从pending缓存里获取</span></span><br><span class="line">        current = pendingSupportRequestManagerFragments.get(fm);</span><br><span class="line">        <span class="keyword">if</span> (current == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="comment">//如果为空，则生成一个新的RequestManagerFragment并add到对应的FragmentManager里</span></span><br><span class="line">            current = <span class="keyword">new</span> SupportRequestManagerFragment();</span><br><span class="line">            pendingSupportRequestManagerFragments.put(fm, current);</span><br><span class="line">            fm.beginTransaction().add(current, FRAGMENT_TAG).commitAllowingStateLoss();</span><br><span class="line">            handler.obtainMessage(ID_REMOVE_SUPPORT_FRAGMENT_MANAGER, fm).sendToTarget();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> current;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//当RequestManagerFragment被成功add之后从pending缓存中remove掉</span></span><br><span class="line"><span class="annotation">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">handleMessage</span><span class="params">(Message message)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">boolean</span> handled = <span class="keyword">true</span>;</span><br><span class="line">    Object removed = <span class="keyword">null</span>;</span><br><span class="line">    Object key = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">switch</span> (message.what) &#123;</span><br><span class="line">        <span class="keyword">case</span> ID_REMOVE_FRAGMENT_MANAGER:</span><br><span class="line">            android.app.FragmentManager fm = (android.app.FragmentManager) message.obj;</span><br><span class="line">            key = fm;</span><br><span class="line">            removed = pendingRequestManagerFragments.remove(fm);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> ID_REMOVE_SUPPORT_FRAGMENT_MANAGER:</span><br><span class="line">            FragmentManager supportFm = (FragmentManager) message.obj;</span><br><span class="line">            key = supportFm;</span><br><span class="line">            removed = pendingSupportRequestManagerFragments.remove(supportFm);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">default</span>:</span><br><span class="line">            handled = <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (handled &amp;&amp; removed == <span class="keyword">null</span> &amp;&amp; Log.isLoggable(TAG, Log.WARN)) &#123;</span><br><span class="line">        Log.w(TAG, <span class="string">"Failed to remove expected request manager fragment, manager: "</span> + key);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> handled;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这部分源码比较长，结合注释看容易理清楚。本质上就是根据传入的上下文对应的<code>FragmentManager</code>生成对应的<code>RequestManager</code>和<code>RequestManagerFragment</code>并完成互相绑定的过程，那么接下来就看生命周期绑定的过程，也是核心部分，首先看<code>RequestManagerFragment</code>的相关部分：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SupportRequestManagerFragment</span> <span class="keyword">extends</span> <span class="title">Fragment</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> RequestManager requestManager;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> ActivityFragmentLifecycle lifecycle;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">SupportRequestManagerFragment</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>(<span class="keyword">new</span> ActivityFragmentLifecycle());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// For testing only.</span></span><br><span class="line">    <span class="annotation">@SuppressLint</span>(<span class="string">"ValidFragment"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">SupportRequestManagerFragment</span><span class="params">(ActivityFragmentLifecycle lifecycle)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.lifecycle = lifecycle;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setRequestManager</span><span class="params">(RequestManager requestManager)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.requestManager = requestManager;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">ActivityFragmentLifecycle <span class="title">getLifecycle</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> lifecycle;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> RequestManager <span class="title">getRequestManager</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> requestManager;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onStart</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onStart();</span><br><span class="line">        lifecycle.onStart();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onStop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onStop();</span><br><span class="line">        lifecycle.onStop();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onDestroy</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onDestroy();</span><br><span class="line">        lifecycle.onDestroy();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onLowMemory</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onLowMemory();</span><br><span class="line">        <span class="comment">// If an activity is re-created, onLowMemory may be called before a manager is ever set.</span></span><br><span class="line">        <span class="comment">// See #329.</span></span><br><span class="line">        <span class="keyword">if</span> (requestManager != <span class="keyword">null</span>) &#123;</span><br><span class="line">            requestManager.onLowMemory();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这部分源码删掉了不相关的代码，只看生命周期相关的方法。所以很明白，这个<code>RequestManagerFragment</code>继承自系统的<code>Fragment</code>，并持有对应的<code>RequestManager</code>和<code>ActivityFragmentLifecycle</code>，当生命周期发生变化时会调用这两个对象对应的方法。然后我们再看<code>ActivityFragmentLifecycle</code>的源码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ActivityFragmentLifecycle</span> <span class="keyword">implements</span> <span class="title">Lifecycle</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Set&lt;LifecycleListener&gt; lifecycleListeners =</span><br><span class="line">            Collections.newSetFromMap(<span class="keyword">new</span> WeakHashMap&lt;LifecycleListener, Boolean&gt;());</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> isStarted;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> isDestroyed;</span><br><span class="line"></span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addListener</span><span class="params">(LifecycleListener listener)</span> </span>&#123;</span><br><span class="line">        lifecycleListeners.add(listener);</span><br><span class="line">        <span class="keyword">if</span> (isDestroyed) &#123;</span><br><span class="line">            listener.onDestroy();</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (isStarted) &#123;</span><br><span class="line">            listener.onStart();</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            listener.onStop();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">onStart</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        isStarted = <span class="keyword">true</span>;</span><br><span class="line">        <span class="keyword">for</span> (LifecycleListener lifecycleListener : Util.getSnapshot(lifecycleListeners)) &#123;</span><br><span class="line">            lifecycleListener.onStart();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">onStop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        isStarted = <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">for</span> (LifecycleListener lifecycleListener : Util.getSnapshot(lifecycleListeners)) &#123;</span><br><span class="line">            lifecycleListener.onStop();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">onDestroy</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        isDestroyed = <span class="keyword">true</span>;</span><br><span class="line">        <span class="keyword">for</span> (LifecycleListener lifecycleListener : Util.getSnapshot(lifecycleListeners)) &#123;</span><br><span class="line">            lifecycleListener.onDestroy();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>也很简单，<code>ActivityFragmentLifecycle</code>实现了<code>Lifecycle</code>接口，持有一群（手动斜眼）<code>lifecycleListener</code>，当它的生命周期方法被调用时，也会调用所有<code>lifecycleListener</code>对应的方法。那么是谁把这些<code>lifecycleListener</code>给add进来，谁实现了这个接口，最终在收到生命周期变化的通知时做出处理呢？答案就在<code>RequestManager</code>里：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">  RequestManager(Context context, <span class="keyword">final</span> Lifecycle lifecycle, RequestManagerTreeNode treeNode,</span><br><span class="line">        RequestTracker requestTracker, ConnectivityMonitorFactory factory) &#123;</span><br><span class="line">    <span class="keyword">this</span>.context = context.getApplicationContext();</span><br><span class="line">    <span class="keyword">this</span>.lifecycle = lifecycle;</span><br><span class="line">    <span class="keyword">this</span>.treeNode = treeNode;</span><br><span class="line">    <span class="keyword">this</span>.requestTracker = requestTracker;</span><br><span class="line">    <span class="keyword">this</span>.glide = Glide.get(context);</span><br><span class="line">    <span class="keyword">this</span>.optionsApplier = <span class="keyword">new</span> OptionsApplier();</span><br><span class="line"></span><br><span class="line">    ConnectivityMonitor connectivityMonitor = factory.build(context,</span><br><span class="line">            <span class="keyword">new</span> RequestManagerConnectivityListener(requestTracker));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// If we're the application level request manager, we may be created on a background thread. In that case we</span></span><br><span class="line">    <span class="comment">// cannot risk synchronously pausing or resuming requests, so we hack around the issue by delaying adding</span></span><br><span class="line">    <span class="comment">// ourselves as a lifecycle listener by posting to the main thread. This should be entirely safe.</span></span><br><span class="line">    <span class="keyword">if</span> (Util.isOnBackgroundThread()) &#123;</span><br><span class="line">        <span class="keyword">new</span> Handler(Looper.getMainLooper()).post(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            <span class="annotation">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                lifecycle.addListener(RequestManager.<span class="keyword">this</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        lifecycle.addListener(<span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    lifecycle.addListener(connectivityMonitor);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>刚才在<code>RequestManagerRetriever</code>的源码里我们知道了，在生成<code>RequestManager</code>时它会持有对应<code>RequestManagerFragment</code>内部的<code>Lifecycle</code>，当它的构造方法被调用时，同时会把自己给add进去，这时候生命周期已经完全绑定，<code>RequestManager</code>已经可以拿到对应所有请求的生命周期回调。细心的同学会发现还会add一个<code>ConnectivityMonitor</code>，这个就属于响应网络变化的优化工作了，有兴趣的同学可以看相关源码。然后我们再看回调方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="annotation">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onStart</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    resumeRequests();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="annotation">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onStop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    pauseRequests();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="annotation">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onDestroy</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    requestTracker.clearRequests();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这部分代码很容易明白了，就是在页面发生变化时，请求也随之响应，达到效率最大化。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>Ok，关于<code>Glide</code>请求的生命周期管理就基本分析完毕，<code>Glide</code>看起来跟<code>Picasso</code>用法基本一致，设计也类似，但是多出那么多方法并不凭空来的，单只是用一个不可见的<code>Fragment</code>实现了对一个上下文的<code>Activity</code>和<code>Fragment</code>生命周期的监控，这部分的实现就非常巧妙。下一部分，我们继续分析 <code>Glide</code>构建<code>Request</code>完成后，接下来具体请求的过程。</p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2017/03/17/Glide源码分析-概述/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Glide源码分析_概述</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2017 Drizzle Zhang
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+
+<script>
+	var yiliaConfig = {
+		fancybox: undefined,
+		mathjax: undefined,
+		animate: undefined,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: undefined
+	}
+</script>
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="/js/main.js" type="text/javascript"></script>
+
+
+
+
+
+
+  </div>
+</body>
+</html>
