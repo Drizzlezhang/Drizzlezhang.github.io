@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" >
+  <title>Glide源码分析-缓存 | Drizzlezhang&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="基本概念每一个优秀的图片图片框架都会有完善的缓存管理机制，Glide当然不例外。这一部分就是分析它的缓存相关模块。流程图就不需要画了，缓存的本质无非就是put和get，而且Glide的所有缓存的实现都是Lru，与我们常见的LruCache并没有本质区别，所以我们只分析Glide的缓存思想和优化工作。
+相关类的介绍Glide的缓存分为两大部分，一类是常规的内存和磁盘缓存，另一类是Glide独有的Bi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Glide源码分析-缓存">
+<meta property="og:url" content="http://yoursite.com/2017/03/19/Glide源码分析-缓存/index.html">
+<meta property="og:site_name" content="Drizzlezhang's blog">
+<meta property="og:description" content="基本概念每一个优秀的图片图片框架都会有完善的缓存管理机制，Glide当然不例外。这一部分就是分析它的缓存相关模块。流程图就不需要画了，缓存的本质无非就是put和get，而且Glide的所有缓存的实现都是Lru，与我们常见的LruCache并没有本质区别，所以我们只分析Glide的缓存思想和优化工作。
+相关类的介绍Glide的缓存分为两大部分，一类是常规的内存和磁盘缓存，另一类是Glide独有的Bi">
+<meta property="og:updated_time" content="2017-03-19T09:09:13.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Glide源码分析-缓存">
+<meta name="twitter:description" content="基本概念每一个优秀的图片图片框架都会有完善的缓存管理机制，Glide当然不例外。这一部分就是分析它的缓存相关模块。流程图就不需要画了，缓存的本质无非就是put和get，而且Glide的所有缓存的实现都是Lru，与我们常见的LruCache并没有本质区别，所以我们只分析Glide的缓存思想和优化工作。
+相关类的介绍Glide的缓存分为两大部分，一类是常规的内存和磁盘缓存，另一类是Glide独有的Bi">
+  
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img src="http://ww3.sinaimg.cn/large/a61009a8jw1f2be34ug4rj208i08idg0.jpg" class="js-avatar" style="width: 100%;height: 100%;opacity: 1;">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">Drizzle Zhang</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">野蛮生长，不忘初心</p>
+		
+
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+						</div>
+					</nav>
+				</section>
+				
+				
+				
+				
+
+				
+			</div>
+		</div>
+	</header>				
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">Drizzle Zhang</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+			
+				<img src="http://ww3.sinaimg.cn/large/a61009a8jw1f2be34ug4rj208i08idg0.jpg" class="js-avatar" style="width: 100%;height: 100%;opacity: 1;">
+			
+			</div>
+			<hgroup>
+			  <h1 class="header-author">Drizzle Zhang</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">野蛮生长，不忘初心</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap"><article id="_post-Glide源码分析-缓存" class="article article-type-_post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2017/03/19/Glide源码分析-缓存/" class="article-date">
+  	<time datetime="2017-03-19T07:26:50.000Z" itemprop="datePublished">2017-03-19</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Glide源码分析-缓存
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/">Android</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h3><p>每一个优秀的图片图片框架都会有完善的缓存管理机制，<code>Glide</code>当然不例外。这一部分就是分析它的缓存相关模块。流程图就不需要画了，缓存的本质无非就是<code>put</code>和<code>get</code>，而且<code>Glide</code>的所有缓存的实现都是<code>Lru</code>，与我们常见的<code>LruCache</code>并没有本质区别，所以我们只分析<code>Glide</code>的缓存思想和优化工作。</p>
+<h3 id="相关类的介绍"><a href="#相关类的介绍" class="headerlink" title="相关类的介绍"></a>相关类的介绍</h3><p><code>Glide</code>的缓存分为两大部分，一类是常规的内存和磁盘缓存，另一类是<code>Glide</code>独有的<code>BitmapPool</code>缓存。</p>
+<ul>
+<li><code>MemoryCache</code>: 传统的内存缓存接口</li>
+<li><code>activeResources</code>: 在我们之前分析<code>Engine</code>时提到过的一个弱引用为值得Map，作为第二层内存缓存</li>
+<li><code>DishCache</code>: 传统的磁盘缓存接口</li>
+<li><code>BitmapPool</code>: <code>Bitmap</code>池接口，用于避免反复创建相同尺寸和属性的<code>Bitmap</code>而消耗性能</li>
+</ul>
+<h3 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h3><p><code>Glide</code>的缓存机制有两类，我们先分析比较传统的一类，也就是大家都会用到的内存缓存和磁盘缓存。在我们之前分析过的<code>Engine</code>的<code>load()</code>方法代码里，我们能看到内存缓存的身影:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">public</span> &lt;T, Z, R&gt; <span class="function">LoadStatus <span class="title">load</span><span class="params">(Key signature, <span class="keyword">int</span> width, <span class="keyword">int</span> height, DataFetcher&lt;T&gt; fetcher,</span><br><span class="line">        DataLoadProvider&lt;T, Z&gt; loadProvider, Transformation&lt;Z&gt; transformation, ResourceTranscoder&lt;Z, R&gt; transcoder,</span><br><span class="line">        Priority priority, <span class="keyword">boolean</span> isMemoryCacheable, DiskCacheStrategy diskCacheStrategy, ResourceCallback cb)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">EngineResource&lt;?&gt; cached = loadFromCache(key, isMemoryCacheable);</span><br><span class="line"><span class="keyword">if</span> (cached != <span class="keyword">null</span>) &#123;</span><br><span class="line">    cb.onResourceReady(cached);</span><br><span class="line">    <span class="keyword">if</span> (Log.isLoggable(TAG, Log.VERBOSE)) &#123;</span><br><span class="line">        logWithTimeAndKey(<span class="string">"Loaded resource from cache"</span>, startTime, key);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">EngineResource&lt;?&gt; active = loadFromActiveResources(key, isMemoryCacheable);</span><br><span class="line"><span class="keyword">if</span> (active != <span class="keyword">null</span>) &#123;</span><br><span class="line">    cb.onResourceReady(active);</span><br><span class="line">    <span class="keyword">if</span> (Log.isLoggable(TAG, Log.VERBOSE)) &#123;</span><br><span class="line">        logWithTimeAndKey(<span class="string">"Loaded resource from active resources"</span>, startTime, key);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> EngineResource&lt;?&gt; loadFromCache(Key key, <span class="keyword">boolean</span> isMemoryCacheable) &#123;</span><br><span class="line">    <span class="keyword">if</span> (!isMemoryCacheable) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    EngineResource&lt;?&gt; cached = getEngineResourceFromCache(key);</span><br><span class="line">    <span class="keyword">if</span> (cached != <span class="keyword">null</span>) &#123;</span><br><span class="line">        cached.acquire();</span><br><span class="line">        activeResources.put(key, <span class="keyword">new</span> ResourceWeakReference(key, cached, getReferenceQueue()));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> cached;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> EngineResource&lt;?&gt; getEngineResourceFromCache(Key key) &#123;</span><br><span class="line">    Resource&lt;?&gt; cached = cache.remove(key);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">final</span> EngineResource result;</span><br><span class="line">    <span class="keyword">if</span> (cached == <span class="keyword">null</span>) &#123;</span><br><span class="line">        result = <span class="keyword">null</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (cached <span class="keyword">instanceof</span> EngineResource) &#123;</span><br><span class="line">        <span class="comment">// Save an object allocation if we've cached an EngineResource (the typical case).</span></span><br><span class="line">        result = (EngineResource) cached;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        result = <span class="keyword">new</span> EngineResource(cached, <span class="keyword">true</span> <span class="comment">/*isCacheable*/</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们由之前的分析可以知道，在真正发起一个<code>EngineRunnable</code>请求之前，会先从内存缓存和<code>activeResources</code>里尝试取数据，内存缓存其实不用多做分析，与我们平时用的没有本质区别。关键是<code>activeResources</code>:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> Map&lt;Key, WeakReference&lt;EngineResource&lt;?&gt;&gt;&gt; activeResources;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> EngineResource&lt;?&gt; loadFromActiveResources(Key key, <span class="keyword">boolean</span> isMemoryCacheable) &#123;</span><br><span class="line">    <span class="keyword">if</span> (!isMemoryCacheable) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    EngineResource&lt;?&gt; active = <span class="keyword">null</span>;</span><br><span class="line">    WeakReference&lt;EngineResource&lt;?&gt;&gt; activeRef = activeResources.get(key);</span><br><span class="line">    <span class="keyword">if</span> (activeRef != <span class="keyword">null</span>) &#123;</span><br><span class="line">        active = activeRef.get();</span><br><span class="line">        <span class="keyword">if</span> (active != <span class="keyword">null</span>) &#123;</span><br><span class="line">            active.acquire();</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            activeResources.remove(key);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> active;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> EngineResource&lt;?&gt; loadFromCache(Key key, <span class="keyword">boolean</span> isMemoryCacheable) &#123;</span><br><span class="line">    <span class="keyword">if</span> (!isMemoryCacheable) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    EngineResource&lt;?&gt; cached = getEngineResourceFromCache(key);</span><br><span class="line">    <span class="keyword">if</span> (cached != <span class="keyword">null</span>) &#123;</span><br><span class="line">        cached.acquire();</span><br><span class="line">        activeResources.put(key, <span class="keyword">new</span> ResourceWeakReference(key, cached, getReferenceQueue()));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> cached;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onEngineJobComplete</span><span class="params">(Key key, EngineResource&lt;?&gt; resource)</span> </span>&#123;</span><br><span class="line">    Util.assertMainThread();</span><br><span class="line">    <span class="comment">// A null resource indicates that the load failed, usually due to an exception.</span></span><br><span class="line">    <span class="keyword">if</span> (resource != <span class="keyword">null</span>) &#123;</span><br><span class="line">        resource.setResourceListener(key, <span class="keyword">this</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (resource.isCacheable()) &#123;</span><br><span class="line">            activeResources.put(key, <span class="keyword">new</span> ResourceWeakReference(key, resource, getReferenceQueue()));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// <span class="doctag">TODO:</span> should this check that the engine job is still current?</span></span><br><span class="line">    jobs.remove(key);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>activeResources</code>是一个以弱引用<code>Resource</code>为值的Map，只要这次请求获取到数据时，它都会将结果缓存进去，作为第二级缓存备用。比一般内存缓存额外多一级缓存的意义在于，当内存不足时清理内存缓存中的资源时，不会对使用中的<code>Resource</code>造成影响。</p>
+<p>而磁盘缓存我们在上一部分分析的时候已经分析过了，在一个<code>DecodeJob</code>中，会首先从磁盘缓存中获取数据；如果没有命中，则从数据源取到数据之后会写入磁盘缓存备用。<br>通过以上的逻辑，<code>Glide</code>就实现了一个传统的缓存结构。但是<code>Glide</code>之所以在推出的时候，宣传的是它在列表里表现的”丝般顺滑”,主要还是源于它的<code>BitmapPool</code>设计。我们首先看下<code>BitmapPool</code>的代码:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LruBitmapPool</span> <span class="keyword">implements</span> <span class="title">BitmapPool</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String TAG = <span class="string">"LruBitmapPool"</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Bitmap.Config DEFAULT_CONFIG = Bitmap.Config.ARGB_8888;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> LruPoolStrategy strategy;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Set&lt;Bitmap.Config&gt; allowedConfigs;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> initialMaxSize;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> BitmapTracker tracker;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> maxSize;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> currentSize;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> hits;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> misses;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> puts;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> evictions;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Exposed for testing only.</span></span><br><span class="line">    LruBitmapPool(<span class="keyword">int</span> maxSize, LruPoolStrategy strategy, Set&lt;Bitmap.Config&gt; allowedConfigs) &#123;</span><br><span class="line">        <span class="keyword">this</span>.initialMaxSize = maxSize;</span><br><span class="line">        <span class="keyword">this</span>.maxSize = maxSize;</span><br><span class="line">        <span class="keyword">this</span>.strategy = strategy;</span><br><span class="line">        <span class="keyword">this</span>.allowedConfigs = allowedConfigs;</span><br><span class="line">        <span class="keyword">this</span>.tracker = <span class="keyword">new</span> NullBitmapTracker();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span><br><span class="line">     * Constructor for LruBitmapPool.</span><br><span class="line">     *</span><br><span class="line">     * <span class="doctag">@param</span> maxSize The initial maximum size of the pool in bytes.</span><br><span class="line">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">LruBitmapPool</span><span class="params">(<span class="keyword">int</span> maxSize)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>(maxSize, getDefaultStrategy(), getDefaultAllowedConfigs());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span><br><span class="line">     * Constructor for LruBitmapPool.</span><br><span class="line">     *</span><br><span class="line">     * <span class="doctag">@param</span> maxSize The initial maximum size of the pool in bytes.</span><br><span class="line">     * <span class="doctag">@param</span> allowedConfigs A white listed set of &#123;<span class="doctag">@link</span> android.graphics.Bitmap.Config&#125; that are allowed to be put</span><br><span class="line">     *                       into the pool. Configs not in the allowed set will be rejected.</span><br><span class="line">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">LruBitmapPool</span><span class="params">(<span class="keyword">int</span> maxSize, Set&lt;Bitmap.Config&gt; allowedConfigs)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>(maxSize, getDefaultStrategy(), allowedConfigs);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getMaxSize</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> maxSize;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">setSizeMultiplier</span><span class="params">(<span class="keyword">float</span> sizeMultiplier)</span> </span>&#123;</span><br><span class="line">        maxSize = Math.round(initialMaxSize * sizeMultiplier);</span><br><span class="line">        evict();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">boolean</span> <span class="title">put</span><span class="params">(Bitmap bitmap)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (bitmap == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException(<span class="string">"Bitmap must not be null"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (!bitmap.isMutable() || strategy.getSize(bitmap) &gt; maxSize || !allowedConfigs.contains(bitmap.getConfig())) &#123;</span><br><span class="line">            <span class="keyword">if</span> (Log.isLoggable(TAG, Log.VERBOSE)) &#123;</span><br><span class="line">                Log.v(TAG, <span class="string">"Reject bitmap from pool"</span></span><br><span class="line">                        + <span class="string">", bitmap: "</span> + strategy.logBitmap(bitmap)</span><br><span class="line">                        + <span class="string">", is mutable: "</span> + bitmap.isMutable()</span><br><span class="line">                        + <span class="string">", is allowed config: "</span> + allowedConfigs.contains(bitmap.getConfig()));</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">int</span> size = strategy.getSize(bitmap);</span><br><span class="line">        strategy.put(bitmap);</span><br><span class="line">        tracker.add(bitmap);</span><br><span class="line"></span><br><span class="line">        puts++;</span><br><span class="line">        currentSize += size;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (Log.isLoggable(TAG, Log.VERBOSE)) &#123;</span><br><span class="line">            Log.v(TAG, <span class="string">"Put bitmap in pool="</span> + strategy.logBitmap(bitmap));</span><br><span class="line">        &#125;</span><br><span class="line">        dump();</span><br><span class="line"></span><br><span class="line">        evict();</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">evict</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        trimToSize(maxSize);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> Bitmap <span class="title">get</span><span class="params">(<span class="keyword">int</span> width, <span class="keyword">int</span> height, Bitmap.Config config)</span> </span>&#123;</span><br><span class="line">        Bitmap result = getDirty(width, height, config);</span><br><span class="line">        <span class="keyword">if</span> (result != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="comment">// Bitmaps in the pool contain random data that in some cases must be cleared for an image to be rendered</span></span><br><span class="line">            <span class="comment">// correctly. we shouldn't force all consumers to independently erase the contents individually, so we do so</span></span><br><span class="line">            <span class="comment">// here. See issue #131.</span></span><br><span class="line">            result.eraseColor(Color.TRANSPARENT);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="annotation">@TargetApi</span>(Build.VERSION_CODES.HONEYCOMB_MR1)</span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> Bitmap <span class="title">getDirty</span><span class="params">(<span class="keyword">int</span> width, <span class="keyword">int</span> height, Bitmap.Config config)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// Config will be null for non public config types, which can lead to transformations naively passing in</span></span><br><span class="line">        <span class="comment">// null as the requested config here. See issue #194.</span></span><br><span class="line">        <span class="keyword">final</span> Bitmap result = strategy.get(width, height, config != <span class="keyword">null</span> ? config : DEFAULT_CONFIG);</span><br><span class="line">        <span class="keyword">if</span> (result == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (Log.isLoggable(TAG, Log.DEBUG)) &#123;</span><br><span class="line">                Log.d(TAG, <span class="string">"Missing bitmap="</span> + strategy.logBitmap(width, height, config));</span><br><span class="line">            &#125;</span><br><span class="line">            misses++;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            hits++;</span><br><span class="line">            currentSize -= strategy.getSize(result);</span><br><span class="line">            tracker.remove(result);</span><br><span class="line">            <span class="keyword">if</span> (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.HONEYCOMB_MR1) &#123;</span><br><span class="line">                result.setHasAlpha(<span class="keyword">true</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (Log.isLoggable(TAG, Log.VERBOSE)) &#123;</span><br><span class="line">            Log.v(TAG, <span class="string">"Get bitmap="</span> + strategy.logBitmap(width, height, config));</span><br><span class="line">        &#125;</span><br><span class="line">        dump();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">clearMemory</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (Log.isLoggable(TAG, Log.DEBUG)) &#123;</span><br><span class="line">            Log.d(TAG, <span class="string">"clearMemory"</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        trimToSize(<span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="annotation">@SuppressLint</span>(<span class="string">"InlinedApi"</span>)</span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">trimMemory</span><span class="params">(<span class="keyword">int</span> level)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (Log.isLoggable(TAG, Log.DEBUG)) &#123;</span><br><span class="line">            Log.d(TAG, <span class="string">"trimMemory, level="</span> + level);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (level &gt;= android.content.ComponentCallbacks2.TRIM_MEMORY_MODERATE) &#123;</span><br><span class="line">            clearMemory();</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (level &gt;= android.content.ComponentCallbacks2.TRIM_MEMORY_BACKGROUND) &#123;</span><br><span class="line">            trimToSize(maxSize / <span class="number">2</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面是<code>BitmapPool</code>的主要实现类<code>LruBitmapPool</code>关键的一部分代码。我们可以看到在<code>put()</code>方法里，并没有常见的<code>key</code>值，<code>key</code>是完全根据<code>Bitmap</code>的尺寸和属性生成的。在<code>get()</code>方法里，也是通过传入尺寸和属性获取对象的。其实不需要看<code>BitmapPool</code>是怎么使用的，光看这部分其实就可以知道它的设计思路了。在Andorid的<code>ListView</code>和<code>RecyclerView</code>中，如果item里有图片的话，快速滑动的过程中无法避免不断创建新的<code>Bitmap</code>对象供item使用，在<code>ListView</code>和<code>RecyclerView</code>中<code>View</code>是可复用的，<code>Bitmap</code>并不是，而在Android中<code>Bitmap</code>的创建是一件非常耗费自愿的事情，所有因此衍生出这个<code>BitmapPool</code>，当已经有尺寸和属性相同的<code>Bitmap</code>被创建出来后就不用再创建新的了，直接使用之前的就行。我们可以看某个地方使用<code>BitmapPool</code>的代码:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CenterCrop</span> <span class="keyword">extends</span> <span class="title">BitmapTransformation</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">CenterCrop</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(context);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">CenterCrop</span><span class="params">(BitmapPool bitmapPool)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(bitmapPool);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Bitmap doesn't implement equals, so == and .equals are equivalent here.</span></span><br><span class="line">    <span class="annotation">@SuppressWarnings</span>(<span class="string">"PMD.CompareObjectsWithEquals"</span>)</span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> Bitmap <span class="title">transform</span><span class="params">(BitmapPool pool, Bitmap toTransform, <span class="keyword">int</span> outWidth, <span class="keyword">int</span> outHeight)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">final</span> Bitmap toReuse = pool.get(outWidth, outHeight, toTransform.getConfig() != <span class="keyword">null</span></span><br><span class="line">                ? toTransform.getConfig() : Bitmap.Config.ARGB_8888);</span><br><span class="line">        Bitmap transformed = TransformationUtils.centerCrop(toReuse, toTransform, outWidth, outHeight);</span><br><span class="line">        <span class="keyword">if</span> (toReuse != <span class="keyword">null</span> &amp;&amp; toReuse != transformed &amp;&amp; !pool.put(toReuse)) &#123;</span><br><span class="line">            toReuse.recycle();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> transformed;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getId</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"CenterCrop.com.bumptech.glide.load.resource.bitmap"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在用于生成<code>centerCrop</code>效果的<code>Transformation</code>里，我们能看到在<code>transform</code>方法里就传入了全局的<code>BitmapPool</code>，在构建目标的<code>Bitmap</code>时，会从<code>BitmapPool</code>中取对应的<code>Bitmap</code>以复用。这样就避免了每次都必须创建一个新的<code>Bitmap</code>进而消耗太多资源。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p><code>Glide</code>的缓存机制的优秀之处，一是<code>BitmapPool</code>机制，二是<code>activeResources</code>这个第二级缓存增加了内存缓存的命中率。<code>Glide</code>通过缓存机制达到了它所宣传的顺滑的特点。当然，<code>BitmapPool</code>肯定会占用部分内存，但是与提升体验相比瑕不掩瑜。如果某些低端机型出现内存不够的情况，可能需要手动监听内存使用情况并及时调用<code>Glide.get(context).clearMemory()</code>。</p>
+<p>对<code>Glide</code>的源码分析基本就是这样，但是还是建议完整地阅读源码，因为分析只能了解<code>Glide</code>整体的结构，对debug有帮助，但是如果想完全发挥<code>Glide</code>的巨大潜能，还是应该阅读源码并结合官方文档，充分利用<code>ModelLoader</code>、<code>Transformation</code>以及<code>Target</code>这些可扩展的接口打造适合自己项目的框架。</p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2017/03/19/Glide源码分析-具体请求/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Glide源码分析-具体请求</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2017 Drizzle Zhang
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+
+<script>
+	var yiliaConfig = {
+		fancybox: undefined,
+		mathjax: undefined,
+		animate: undefined,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: undefined
+	}
+</script>
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="/js/main.js" type="text/javascript"></script>
+
+
+
+
+
+
+  </div>
+</body>
+</html>
