@@ -7,19 +7,19 @@
   <title>Picasso源码结构分析 | Drizzlezhang&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="基本概念前一段时间复习了Glide的源码，而且这次做了文字整理，又被大神的思路震惊了一次。正好赶上清明假，就把用起来特别相似的，出自JakeWarton大神的Picasso的源码也分析一下，同时跟Glide也做个简单的比较。
-Picasso的官网在http://square.github.io/picasso/，用法跟`Glide`基本一致，就不用多废话介绍了，毕竟已经很有名了。这篇分析基于`Pi">
+Picasso的官网在http://square.github.io/picasso/用法跟Glide基本一致，就不用多废话介绍了，毕竟已经很有名了。这篇分析基于Picass">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Picasso源码结构分析">
 <meta property="og:url" content="http://yoursite.com/2017/04/08/Picasso源码结构分析/index.html">
 <meta property="og:site_name" content="Drizzlezhang's blog">
 <meta property="og:description" content="基本概念前一段时间复习了Glide的源码，而且这次做了文字整理，又被大神的思路震惊了一次。正好赶上清明假，就把用起来特别相似的，出自JakeWarton大神的Picasso的源码也分析一下，同时跟Glide也做个简单的比较。
-Picasso的官网在http://square.github.io/picasso/，用法跟`Glide`基本一致，就不用多废话介绍了，毕竟已经很有名了。这篇分析基于`Pi">
+Picasso的官网在http://square.github.io/picasso/用法跟Glide基本一致，就不用多废话介绍了，毕竟已经很有名了。这篇分析基于Picass">
 <meta property="og:image" content="http://omy50xsvp.bkt.clouddn.com/17-4-4/32085605-file_1491296793698_a75d.jpg">
-<meta property="og:updated_time" content="2017-04-08T14:08:58.000Z">
+<meta property="og:updated_time" content="2017-04-08T14:10:49.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Picasso源码结构分析">
 <meta name="twitter:description" content="基本概念前一段时间复习了Glide的源码，而且这次做了文字整理，又被大神的思路震惊了一次。正好赶上清明假，就把用起来特别相似的，出自JakeWarton大神的Picasso的源码也分析一下，同时跟Glide也做个简单的比较。
-Picasso的官网在http://square.github.io/picasso/，用法跟`Glide`基本一致，就不用多废话介绍了，毕竟已经很有名了。这篇分析基于`Pi">
+Picasso的官网在http://square.github.io/picasso/用法跟Glide基本一致，就不用多废话介绍了，毕竟已经很有名了。这篇分析基于Picass">
   
   
   <link rel="stylesheet" href="/css/style.css" type="text/css">
@@ -143,7 +143,7 @@ Picasso的官网在http://square.github.io/picasso/，用法跟`Glide`基本一�
     <div class="article-entry" itemprop="articleBody">
       
         <h3 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h3><p>前一段时间复习了<code>Glide</code>的源码，而且这次做了文字整理，又被大神的思路震惊了一次。正好赶上清明假，就把用起来特别相似的，出自JakeWarton大神的<code>Picasso</code>的源码也分析一下，同时跟<code>Glide</code>也做个简单的比较。</p>
-<p><code>Picasso</code>的官网在<a href="http://square.github.io/picasso/，用法跟`Glide`基本一致，就不用多废话介绍了，毕竟已经很有名了。这篇分析基于`Picasso" target="_blank" rel="external">http://square.github.io/picasso/，用法跟`Glide`基本一致，就不用多废话介绍了，毕竟已经很有名了。这篇分析基于`Picasso</a> 2.5.2`。</p>
+<p><code>Picasso</code>的官网在<a href="http://square.github.io/picasso/" target="_blank" rel="external">http://square.github.io/picasso/</a><br>用法跟<code>Glide</code>基本一致，就不用多废话介绍了，毕竟已经很有名了。这篇分析基于<code>Picasso 2.5.2</code>。</p>
 <h3 id="基本流程"><a href="#基本流程" class="headerlink" title="基本流程"></a>基本流程</h3><p>还是按照规矩先上图：</p>
 <p><img src="http://omy50xsvp.bkt.clouddn.com/17-4-4/32085605-file_1491296793698_a75d.jpg" alt=""></p>
 <p>看起来有点绕，因为<code>Picasso</code>不像<code>Glide</code>那样类和接口特别多，而是用很少的类实现了强大的功能，那么也就不可避免的有的类承担了多种工作。接下来我们就来分析这些类的作用。</p>
