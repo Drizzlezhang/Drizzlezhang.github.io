@@ -104,6 +104,81 @@
 
       <div class="body-wrap">
   
+    <article id="post-Suggestion-use-tools-overrideLibrary-””-to-force-usage" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/04/08/Suggestion-use-tools-overrideLibrary-””-to-force-usage/" class="article-date">
+  	<time datetime="2016-04-08T09:58:42.000Z" itemprop="datePublished">2016-04-08</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/04/08/Suggestion-use-tools-overrideLibrary-””-to-force-usage/">Suggestion: use tools:overrideLibrary=”” to force usage</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Android开发在build的时候有时会报如下错误：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Error:Execution failed for task &#8216;:app:processProductDebugManifest&#8217;.&#10;Manifest merger failed : uses-sdk : minSdkVersion 14 cannot be smaller than version 18 declared in library......&#10;Suggestion: use tools:overrideLibrary=&#8221;xx.xxx.xx&#8221; to force usage</span><br></pre></td></tr></table></figure>
+<p>错误原因是当前的Build Variant(<em>即错误提示中的ProductDebug</em>)的<code>minSdkVersion</code>小于它所依赖的包的<code>minSdkVersion</code>，所以报了这个错。解决方案就像Suggestion告诉的，在对应的<code>AndroidManifest.xml</code>文件里添加一个<code>&lt;uses-sdk tools:overrideLibrary=&quot;xxx.xxx.xxx&quot;/&gt;</code>的标签，中间填上报错的依赖库的包名，如果有多个这样的依赖库的话就填多个包名，用逗号分开。</p>
+<p>前面是遇到这个问题常用的解决方法，但是在有些情况下得注意这个标签是否填对了地方。比如在项目有多个variant时，会针对不同的variant有不同的包，不同的包的依赖也是不同的，那么就应该针对某个包写一个单独的<code>AndroidManifest.xml</code>来解决前面那种问题。一般情况下这样解决了之后就不会有问题了。</p>
+<p>但是还有特殊情况。比如针对不同的flavor做了两个针对的test包，<code>androidTestFlavor1</code>和<code>androidTestFlavor2</code>，并且配置了<code>minSdkVersion</code>有冲突的依赖，而<code>androidTest</code>包没有有效代码所以被删掉了。这时候即使按照前面的解决方案给<code>androidTestFlavor1</code>和<code>androidTestFlavor2</code>对应的<code>AndroidManifest.xml</code>配置了<code>tools:overrideLibrary</code>，在Build的时候还是会报如下错：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Error:Execution failed for task &#8216;:app:processProductDebugAndroidTestManifest&#8217;.</span><br></pre></td></tr></table></figure>
+<p>也就是说明明原有的<code>androidTest</code>包里已经被删掉了，但是gradle还是会跑其对应的task<code>app:processProductDebugAndroidTestManifest</code>，这时候我们只需要重新把<code>androidTest</code>包找回来，里面什么都没有只放一个<code>AndroidManifest.xml</code>,并配置对应的<code>tools:overrideLibrary</code>，就可以Build成功了。</p>
+<p>然后对比了几个不同的项目Build的message，无论有没有<code>androidTest</code>，都会跑对应当前variant的这个task,只要存在前面的<code>minSdkVersion</code>的冲突问题并且没有在<code>androidTest</code>对应的<code>AndroidManifest.xml</code>里解决，都会报错。</p>
+<p>研究了半天对这个问题并没有找到比较好的解决方案，能解决的方法一种是如果存在以上问题就保留<code>androidTest</code>这个包和对应的<code>AndroidManifest.xml</code>；另一种是如果这个flavor就是专门为测试用的话，可以在build.gradle文件里给对应的flavor设置不同于其他flavor的<code>minSdkVersion</code>，如下：</p>
+<pre><code>productFlavors {
+     flavor1 {
+         ......
+       }
+     flavor2 {
+         ......
+     }
+     testflavor {
+         minSdkVersion xx
+     }
+  }
+</code></pre><p>如果项目里遇到类似的问题基本就是这个情况。这两个方法只能算是妥协，但是如果项目的build是默认必须跑这个task的话应该也没有更好的办法能解决了。</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/">Android</a></li></ul>
+	</div>
+
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
     <article id="post-一年总结" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">

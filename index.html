@@ -554,6 +554,103 @@
 
 
   
+    <article id="_posts-OkHttp源码结构分析" class="article article-type-_posts" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/08/10/OkHttp源码结构分析/" class="article-date">
+  	<time datetime="2016-08-10T14:40:26.000Z" itemprop="datePublished">2016-08-10</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/08/10/OkHttp源码结构分析/">OkHttp源码结构分析</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h3><p>之前一篇简单介绍了<code>OkHttp</code>的概况和使用方式，以及如何与<code>Volley</code>一起使用，知其然也要知其所以然，这一篇大概介绍下这个网络框架的源码结构。基于<code>OkHttp 3.5.0</code></p>
+<h3 id="基本流程"><a href="#基本流程" class="headerlink" title="基本流程"></a>基本流程</h3><p><img src="http://omy50xsvp.bkt.clouddn.com/17-4-2/59741282-file_1491117652168_449f.png" alt="OkHttp源码结构图"></p>
+<p>这个框架作为Android开发者应该是很熟悉的。入口的构建是建造者模式，在请求的时候手动构建一个<code>Request</code>，通过<code>OkHttpClient</code>的<code>newCall()</code>方法发起请求，获取<code>Response</code>，也就是请求最终的结果。代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">OkHttpClient client = <span class="keyword">new</span> OkHttpClient();</span><br><span class="line"></span><br><span class="line"><span class="function">String <span class="title">run</span><span class="params">(String url)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">  Request request = <span class="keyword">new</span> Request.Builder()</span><br><span class="line">      .url(url)</span><br><span class="line">      .build();</span><br><span class="line"></span><br><span class="line">  Response response = client.newCall(request).execute();</span><br><span class="line">  <span class="keyword">return</span> response.body().string();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="主要组件"><a href="#主要组件" class="headerlink" title="主要组件"></a>主要组件</h2><h4 id="OkHttpClient-Bulider"><a href="#OkHttpClient-Bulider" class="headerlink" title="OkHttpClient.Bulider"></a><code>OkHttpClient.Bulider</code></h4><ul>
+<li>负责构建<code>OkHttpClient</code>,Square官方的建议是全局共用一个<code>OkHttpClient</code>,实际上<code>OkHttpClient</code>虽然有public的狗仔方法，内部也是传入一个默认的Builder.</li>
+</ul>
+<h4 id="OkHttpClient"><a href="#OkHttpClient" class="headerlink" title="OkHttpClient"></a><code>OkHttpClient</code></h4><ul>
+<li>处理配置这个client的参数，核心方法其实就一个：  </li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="annotation">@Override</span> <span class="function"><span class="keyword">public</span> Call <span class="title">newCall</span><span class="params">(Request request)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> RealCall(<span class="keyword">this</span>, request, <span class="keyword">false</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="Request"><a href="#Request" class="headerlink" title="Request"></a><code>Request</code></h4><ul>
+<li>这个类只用来存储请求的数据，不做实际的事情，具体请求的发起由下一个<code>RealCall</code>来做</li>
+</ul>
+<h4 id="RealCall"><a href="#RealCall" class="headerlink" title="RealCall"></a><code>RealCall</code></h4><ul>
+<li><code>RealCall</code>实现了<code>Call</code>接口，关于这个接口的作用，注释已经说清楚了,<code>RealCall</code>是唯一的实现，也就是<code>OkHttp</code>实际用来请求的类</li>
+</ul>
+<blockquote>
+<p>A call is a request that has been prepared for execution. A call can be canceled. As this object<br>represents a single request/response pair (stream), it cannot be executed twice.</p>
+</blockquote>
+<ul>
+<li>那么怎么干活呢？<code>Call</code>这个接口有两个关键的实现方法，<code>execute()</code>和<code>enqueue()</code>，方法名意思已经很明确了，一个同步一个异步，我们只需要看这两个方法的实现就可以了：</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="annotation">@Override</span> <span class="function"><span class="keyword">public</span> Response <span class="title">execute</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">  <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (executed) <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Already Executed"</span>);</span><br><span class="line">    executed = <span class="keyword">true</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  captureCallStackTrace();</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    client.dispatcher().executed(<span class="keyword">this</span>);</span><br><span class="line">    Response result = getResponseWithInterceptorChain();</span><br><span class="line">    <span class="keyword">if</span> (result == <span class="keyword">null</span>) <span class="keyword">throw</span> <span class="keyword">new</span> IOException(<span class="string">"Canceled"</span>);</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">  &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">    client.dispatcher().finished(<span class="keyword">this</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="annotation">@Override</span> <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">enqueue</span><span class="params">(Callback responseCallback)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (executed) <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Already Executed"</span>);</span><br><span class="line">    executed = <span class="keyword">true</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  captureCallStackTrace();</span><br><span class="line">  client.dispatcher().enqueue(<span class="keyword">new</span> AsyncCall(responseCallback));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">AsyncCall</span> <span class="keyword">extends</span> <span class="title">NamedRunnable</span> </span>&#123;</span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">final</span> Callback responseCallback;</span><br><span class="line"></span><br><span class="line">  AsyncCall(Callback responseCallback) &#123;</span><br><span class="line">    <span class="keyword">super</span>(<span class="string">"OkHttp %s"</span>, redactedUrl());</span><br><span class="line">    <span class="keyword">this</span>.responseCallback = responseCallback;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function">String <span class="title">host</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> originalRequest.url().host();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function">Request <span class="title">request</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> originalRequest;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function">RealCall <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> RealCall.<span class="keyword">this</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="annotation">@Override</span> <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">boolean</span> signalledCallback = <span class="keyword">false</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      Response response = getResponseWithInterceptorChain();</span><br><span class="line">      <span class="keyword">if</span> (retryAndFollowUpInterceptor.isCanceled()) &#123;</span><br><span class="line">        signalledCallback = <span class="keyword">true</span>;</span><br><span class="line">        responseCallback.onFailure(RealCall.<span class="keyword">this</span>, <span class="keyword">new</span> IOException(<span class="string">"Canceled"</span>));</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        signalledCallback = <span class="keyword">true</span>;</span><br><span class="line">        responseCallback.onResponse(RealCall.<span class="keyword">this</span>, response);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">      <span class="keyword">if</span> (signalledCallback) &#123;</span><br><span class="line">        <span class="comment">// Do not signal the callback twice!</span></span><br><span class="line">        Platform.get().log(INFO, <span class="string">"Callback failure for "</span> + toLoggableString(), e);</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        responseCallback.onFailure(RealCall.<span class="keyword">this</span>, e);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">      client.dispatcher().finished(<span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>同步方法很直接，通过<code>getResponseWithInterceptorChain()</code>直接取<code>Response</code>，异步方法则间接一点，包装一个<code>Runnable</code>扔给线程池，本质上最终使用的也是<code>getResponseWithInterceptorChain()</code>。然后我们就要看这个方法是何方神圣了：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function">Response <span class="title">getResponseWithInterceptorChain</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">  <span class="comment">// Build a full stack of interceptors.</span></span><br><span class="line">  List&lt;Interceptor&gt; interceptors = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">  interceptors.addAll(client.interceptors());</span><br><span class="line">  interceptors.add(retryAndFollowUpInterceptor);</span><br><span class="line">  interceptors.add(<span class="keyword">new</span> BridgeInterceptor(client.cookieJar()));</span><br><span class="line">  interceptors.add(<span class="keyword">new</span> CacheInterceptor(client.internalCache()));</span><br><span class="line">  interceptors.add(<span class="keyword">new</span> ConnectInterceptor(client));</span><br><span class="line">  <span class="keyword">if</span> (!forWebSocket) &#123;</span><br><span class="line">    interceptors.addAll(client.networkInterceptors());</span><br><span class="line">  &#125;</span><br><span class="line">  interceptors.add(<span class="keyword">new</span> CallServerInterceptor(forWebSocket));</span><br><span class="line"></span><br><span class="line">  Interceptor.Chain chain = <span class="keyword">new</span> RealInterceptorChain(</span><br><span class="line">      interceptors, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="number">0</span>, originalRequest);</span><br><span class="line">  <span class="keyword">return</span> chain.proceed(originalRequest);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>熟悉<code>OkHttp</code>的同学都知道<code>OkHttp</code>有一个很厉害的东西，叫<code>Interceptor</code>，只要实现了这个接口，就可以在一个请求的<code>Request</code>和<code>Response</code>之间做很多文章，比如写个<code>LogInterceptor</code>打印请求的各种信息，实现也特别优雅，但是看了源码才知道，<code>Interceptor</code>贯穿了请求的全部，无论是重试机制、缓存还是具体请求，实际上都是通过<code>Interceptor</code>来做的。那么接下来就分析源码中用到的这些<code>Interceptor</code>.</p>
+<h4 id="RetryAndFollowUpInterceptor"><a href="#RetryAndFollowUpInterceptor" class="headerlink" title="RetryAndFollowUpInterceptor"></a><code>RetryAndFollowUpInterceptor</code></h4><ul>
+<li>负责重试和重定向</li>
+</ul>
+<h4 id="BridgeInterceptor"><a href="#BridgeInterceptor" class="headerlink" title="BridgeInterceptor"></a><code>BridgeInterceptor</code></h4><ul>
+<li>负责把请求转换为发送给服务器的请求，把服务器返回的结果包装成我们接收到的<code>Response</code></li>
+</ul>
+<h4 id="CacheInterceptor"><a href="#CacheInterceptor" class="headerlink" title="CacheInterceptor"></a><code>CacheInterceptor</code></h4><ul>
+<li>缓存命中时则直接返回结果，未命中时则在网络请求结果返回时更新缓存</li>
+</ul>
+<h4 id="ConnectInterceptor"><a href="#ConnectInterceptor" class="headerlink" title="ConnectInterceptor"></a><code>ConnectInterceptor</code></h4><ul>
+<li>负责与服务器建立连接</li>
+</ul>
+<h4 id="CallServerInterceptor"><a href="#CallServerInterceptor" class="headerlink" title="CallServerInterceptor"></a><code>CallServerInterceptor</code></h4><ul>
+<li>负责向服务器发送请求，从服务器读取返回结果</li>
+</ul>
+<p>环环相扣，是一个典型的责任链模式，这些<code>Interceptor</code>与我们平时写的简单的<code>Interceptor</code>本质是一样的，都是实现一个<code>intercept(Chain chain)</code>方法，然后在<code>Request</code>和<code>Response</code>上做文章，但是套在一起，就实现了一个完整的网络请求过程，同时还完成了重试、缓存这些工作。具体的代码就不分析了···因为具体发起请求和读取返回结果又是<code>HttpCodec</code>和<code>Okio</code>这两个大家伙的工作，分析起来又是大把的时间耗在里面了(都是泪)。有兴趣的同学可以读读看。如果只是分析<code>OkHttp</code>大的源码结构的话，这几个类就足够了。</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/">Android</a></li></ul>
+	</div>
+
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
     <article id="post-在项目中使用OkHttp" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -900,81 +997,6 @@
 </ul>
 <h4 id="自定义Content-Transition"><a href="#自定义Content-Transition" class="headerlink" title="自定义Content Transition"></a>自定义Content Transition</h4><p>   可以借鉴Android中已有的实现Fade,Slide,Explode</p>
 <h4 id="Reveal"><a href="#Reveal" class="headerlink" title="Reveal"></a>Reveal</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ViewAnimationUtils.createCircularReveal(View view,<span class="keyword">int</span> centerX,  <span class="keyword">int</span> centerY, <span class="keyword">float</span> startRadius, <span class="keyword">float</span> endRadius)</span><br></pre></td></tr></table></figure>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/">Android</a></li></ul>
-	</div>
-
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-Suggestion-use-tools-overrideLibrary-””-to-force-usage" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2016/04/08/Suggestion-use-tools-overrideLibrary-””-to-force-usage/" class="article-date">
-  	<time datetime="2016-04-08T09:58:42.000Z" itemprop="datePublished">2016-04-08</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/04/08/Suggestion-use-tools-overrideLibrary-””-to-force-usage/">Suggestion: use tools:overrideLibrary=”” to force usage</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Android开发在build的时候有时会报如下错误：</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Error:Execution failed for task &#8216;:app:processProductDebugManifest&#8217;.&#10;Manifest merger failed : uses-sdk : minSdkVersion 14 cannot be smaller than version 18 declared in library......&#10;Suggestion: use tools:overrideLibrary=&#8221;xx.xxx.xx&#8221; to force usage</span><br></pre></td></tr></table></figure>
-<p>错误原因是当前的Build Variant(<em>即错误提示中的ProductDebug</em>)的<code>minSdkVersion</code>小于它所依赖的包的<code>minSdkVersion</code>，所以报了这个错。解决方案就像Suggestion告诉的，在对应的<code>AndroidManifest.xml</code>文件里添加一个<code>&lt;uses-sdk tools:overrideLibrary=&quot;xxx.xxx.xxx&quot;/&gt;</code>的标签，中间填上报错的依赖库的包名，如果有多个这样的依赖库的话就填多个包名，用逗号分开。</p>
-<p>前面是遇到这个问题常用的解决方法，但是在有些情况下得注意这个标签是否填对了地方。比如在项目有多个variant时，会针对不同的variant有不同的包，不同的包的依赖也是不同的，那么就应该针对某个包写一个单独的<code>AndroidManifest.xml</code>来解决前面那种问题。一般情况下这样解决了之后就不会有问题了。</p>
-<p>但是还有特殊情况。比如针对不同的flavor做了两个针对的test包，<code>androidTestFlavor1</code>和<code>androidTestFlavor2</code>，并且配置了<code>minSdkVersion</code>有冲突的依赖，而<code>androidTest</code>包没有有效代码所以被删掉了。这时候即使按照前面的解决方案给<code>androidTestFlavor1</code>和<code>androidTestFlavor2</code>对应的<code>AndroidManifest.xml</code>配置了<code>tools:overrideLibrary</code>，在Build的时候还是会报如下错：</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Error:Execution failed for task &#8216;:app:processProductDebugAndroidTestManifest&#8217;.</span><br></pre></td></tr></table></figure>
-<p>也就是说明明原有的<code>androidTest</code>包里已经被删掉了，但是gradle还是会跑其对应的task<code>app:processProductDebugAndroidTestManifest</code>，这时候我们只需要重新把<code>androidTest</code>包找回来，里面什么都没有只放一个<code>AndroidManifest.xml</code>,并配置对应的<code>tools:overrideLibrary</code>，就可以Build成功了。</p>
-<p>然后对比了几个不同的项目Build的message，无论有没有<code>androidTest</code>，都会跑对应当前variant的这个task,只要存在前面的<code>minSdkVersion</code>的冲突问题并且没有在<code>androidTest</code>对应的<code>AndroidManifest.xml</code>里解决，都会报错。</p>
-<p>研究了半天对这个问题并没有找到比较好的解决方案，能解决的方法一种是如果存在以上问题就保留<code>androidTest</code>这个包和对应的<code>AndroidManifest.xml</code>；另一种是如果这个flavor就是专门为测试用的话，可以在build.gradle文件里给对应的flavor设置不同于其他flavor的<code>minSdkVersion</code>，如下：</p>
-<pre><code>productFlavors {
-     flavor1 {
-         ......
-       }
-     flavor2 {
-         ......
-     }
-     testflavor {
-         minSdkVersion xx
-     }
-  }
-</code></pre><p>如果项目里遇到类似的问题基本就是这个情况。这两个方法只能算是妥协，但是如果项目的build是默认必须跑这个task的话应该也没有更好的办法能解决了。</p>
 
       
     </div>
