@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" >
+  <title>阅读源码的半程总结-为什么要阅读源码 | Drizzlezhang&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="我工作时间并不长，阅读的源码也不够多，这篇文章只能说是算是对自己这方面方法论的一个总结，或者更多的是从我工作和做Android这方面的角度分析问题。至于为什么是半程总结，因为以后有了新的感受和技能，肯定还要回头来更新。
+W为什么要读源码？我觉得其实很多人都没有答案。
+我见过最多的，可能就是对一个函数的使用不清楚，Android完全开源，点进去看看这个方法干了啥，可能抛出什么异常，撑死了再看一下注释">
+<meta property="og:type" content="article">
+<meta property="og:title" content="阅读源码的半程总结-为什么要阅读源码">
+<meta property="og:url" content="http://yoursite.com/2017/04/22/阅读源码的半程总结-为什么要阅读源码/index.html">
+<meta property="og:site_name" content="Drizzlezhang's blog">
+<meta property="og:description" content="我工作时间并不长，阅读的源码也不够多，这篇文章只能说是算是对自己这方面方法论的一个总结，或者更多的是从我工作和做Android这方面的角度分析问题。至于为什么是半程总结，因为以后有了新的感受和技能，肯定还要回头来更新。
+W为什么要读源码？我觉得其实很多人都没有答案。
+我见过最多的，可能就是对一个函数的使用不清楚，Android完全开源，点进去看看这个方法干了啥，可能抛出什么异常，撑死了再看一下注释">
+<meta property="og:updated_time" content="2017-04-22T14:14:03.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="阅读源码的半程总结-为什么要阅读源码">
+<meta name="twitter:description" content="我工作时间并不长，阅读的源码也不够多，这篇文章只能说是算是对自己这方面方法论的一个总结，或者更多的是从我工作和做Android这方面的角度分析问题。至于为什么是半程总结，因为以后有了新的感受和技能，肯定还要回头来更新。
+W为什么要读源码？我觉得其实很多人都没有答案。
+我见过最多的，可能就是对一个函数的使用不清楚，Android完全开源，点进去看看这个方法干了啥，可能抛出什么异常，撑死了再看一下注释">
+  
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img src="http://ww3.sinaimg.cn/large/a61009a8jw1f2be34ug4rj208i08idg0.jpg" class="js-avatar" style="width: 100%;height: 100%;opacity: 1;">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">Drizzle Zhang</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">野蛮生长，不忘初心</p>
+		
+
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+						</div>
+					</nav>
+				</section>
+				
+				
+				
+				
+
+				
+			</div>
+		</div>
+	</header>				
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">Drizzle Zhang</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+			
+				<img src="http://ww3.sinaimg.cn/large/a61009a8jw1f2be34ug4rj208i08idg0.jpg" class="js-avatar" style="width: 100%;height: 100%;opacity: 1;">
+			
+			</div>
+			<hgroup>
+			  <h1 class="header-author">Drizzle Zhang</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">野蛮生长，不忘初心</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap"><article id="_posts-阅读源码的半程总结-为什么要阅读源码" class="article article-type-_posts" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2017/04/22/阅读源码的半程总结-为什么要阅读源码/" class="article-date">
+  	<time datetime="2017-04-22T06:42:48.000Z" itemprop="datePublished">2017-04-22</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      阅读源码的半程总结-为什么要阅读源码
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/">Android</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>我工作时间并不长，阅读的源码也不够多，这篇文章只能说是算是对自己这方面方法论的一个总结，或者更多的是从我工作和做Android这方面的角度分析问题。至于为什么是半程总结，因为以后有了新的感受和技能，肯定还要回头来更新。</p>
+<h2 id="W"><a href="#W" class="headerlink" title="W"></a>W</h2><p>为什么要读源码？我觉得其实很多人都没有答案。</p>
+<p>我见过最多的，可能就是对一个函数的使用不清楚，Android完全开源，点进去看看这个方法干了啥，可能抛出什么异常，撑死了再看一下注释，这也就算是读过源码了。可能是我自己现在做Android开发的原因？或者是现在编程语言和框架发展太快？好像我见过的许多人都热衷于学习新框架的用法，做一个项目就等同于推依赖库。</p>
+<p>我见过知乎的一个问题：<a href="https://www.zhihu.com/question/34452706" target="_blank" rel="external">现在android开发都会用到那些快速开发框架或者第三库？</a>。去年的这个时候看到这个问题下面的回答我可能就是会心一笑，因为我也这么做，毕竟初级工程师嘛，哪考虑那么多？GitHub上的star数也能反映很大的问题，一个项目用个RxJava+Retrofit+MD+Dagger+MVP，当然，像OkHttp、Glide、ButterKnife这些已经是必备了，然后写一篇文章宣传下，star数就蹭蹭得涨，我之前闲的时候clone个几个项目看过代码，实话说代码质量真不敢恭维。把这几个库放在一个成熟项目的团队里让大家用，首先，你能保证API是Restful么？你能保证大家都能接受RxJava的学习曲线么，换句话说，学了RxJava的几个操作符，就真的明白什么是响应式编程了么？你能承担项目整体重构成MVP结构的风险么？这几个库都是现在Android开发很棒的库，都是很“潮”的东西，但是不客气的说，除了RxJava学习曲线比较抖，其他这些库现在都是傻瓜式使用，全都有完整的官方文档和Wiki，真的是要啥有啥，只学这些库的使用的话真的没有什么成本。</p>
+<p>吐槽完毕，言归正传。我把读源码分为三种情况：为了修复bug被动阅读，为了技术选型去主动阅读，为了提升自己去阅读。</p>
+<h4 id="被动阅读源码"><a href="#被动阅读源码" class="headerlink" title="被动阅读源码"></a>被动阅读源码</h4><blockquote>
+<p>以下是本人上OkHttp的真实经历</p>
+</blockquote>
+<p>被动就是现在在你的主导下，上了一个新依赖库，你在上线之前做了充分的工作，前期做了社区调研，了解了大家对这个库的各种看法，通读了wiki，甚至看了很多issue，接着在引入项目的时候做了极致的封装，保证与业务代码完全解耦，唯独没有读源代码，毕竟这是件费力不讨好的事儿。万事俱备，上线！然后，你从没有见过的各种bug就接踵而至，很多bug都Google不到，Wiki也不会说我们这个库有啥啥啥的毛病，万幸还有错误栈可以看，没办法了，锅是你的，看源代码虽然像便秘，也只能硬着头皮上啦！</p>
+<p>这时候就开始被动读源码了。一般来说，大多数bug只要根据错误信息，看看是哪个函数抛出来的错误，再循着传递的参数找到底，问题差不多就能解决了。但是总有那种问题，看起来不是你用的库抛出来的，之前从来没出过，只有你的这个版本有，还特别多，别人不由得就怀疑是你的锅，即使是为了自证清白（一般都不清白），也得把问题的根源找到然后解决了。这是一个最痛苦的过程，对于一个影响全局的库来说，任何地方都有可能出问题，到这里，通读源码就是唯一的办法了，任何库都有妥协和脏代码，只有从这部分东西才能猜出问题出在哪里。</p>
+<p>因为这部分问题的解释涉及到我们一部分核心业务逻辑，就不多讲了。只能说如果一个影响全局的库已经成功在一个项目了稳定运行多年，已经调试到没有问题的状态，除非一些强制客观因素必须换功能更强大的库，否则一定要谨慎。</p>
+<h4 id="主动阅读源码"><a href="#主动阅读源码" class="headerlink" title="主动阅读源码"></a>主动阅读源码</h4><blockquote>
+<p>以下是本人上Glide的真实经历</p>
+</blockquote>
+<p>吸取了上面的教训，在换Glide的之前我主动通读了Glide的源代码，即便如此，我也没敢擅自动手。Android最怕的就是莫名其妙的OOM，而换图片加载库则可能会爆发大量的OOM，这时候读完代码也没用，只能用本方法一步一步去检测内存问题。但是后来我们要全局支持gif格式，而UIL没有这个功能，也没法做扩展，这时候就只能上Glide了。</p>
+<p>Glide相对于UIL是比较新的，功能也更多，读完源码之后也被它强大的扩展性震惊了。图片从发起请求到最终展示，真的是每一步都有接口可以重新实现。上线之后并没有预计的出现太多的问题，但是在中间做封装的时候有两个功能让读过的源码有了用武之地：</p>
+<ul>
+<li><p>一是UIL也是很厉害的，它实现了Picasso和Glide都没有做到的加载视频缩略图，只要传入视频路径，就能直接展示一张缩略图。读过Glide的源码之后，其实这个不算难事，Glide从源路径获取数据这部分是通过ModelLoader去做的，只要实现一个专门ModelLoader，再结合SDK提供的ThumbnailUtil工具类，就可以直接加载视频缩略图了。</p>
+</li>
+<li><p>二是我们要做一个全局的视频加载库，可以实现从下载到播放的过程，与图片加载库没有本质区别，还少了一步内存缓存。这部分就要关心Glide最终加载的过程了，看源码我们能知道into（）方法里最终ImageView会被包装成一个Target来展示图片，那我们当然也可以重写Target来展示视频了，而且还充分利用了Glide的其他特性，比我们自己写一个视频加载框架要更省事也更强大。</p>
+</li>
+</ul>
+<p>在进行框架调研时，主动通读源码的好处是显而易见的，因为在封装的时候会尽量避开各种坑，在遇到坑时也能够根据框架的设计特性和扩展性进行解决或者规避。</p>
+<h4 id="为了学习而读源码"><a href="#为了学习而读源码" class="headerlink" title="为了学习而读源码"></a>为了学习而读源码</h4><p>以上两种情况都属于为了具体需求而做的工作，很大程度是为了解决和避免问题。这种情况就是个人提升的关键了。</p>
+<p>首先说从不主动读源码的坏处：一是容易养成一切靠Google、Stackoverfolw和GitHub的习惯，只会复制粘贴和调试，自己无法独立产出。二是你所处的环境里最厉害的人就是你的上限了，因为他写的代码是你能看到的代码的上限。</p>
+<p>优秀的框架基本都是大神或者优质团队的代码精华，敢做开源项目的一般都是对框架功能和代码质量有极高信心的人，所以找一些流行的框架，通读源码，学习其中的细节和设计模式，对自己的日常工作肯定是有很大好处的。还是以我自己举例子。</p>
+<p>在被动读了OkHttp之后，我后来又重读了一遍。大家都知道Interceptor是OkHttp一个很强大的接口，利用这个接口几乎可以在一个完整的请求中做任何事情。但是其实在OkHttp内部也是用Interceptor做了重定向、连接服务器、发送和接收请求以及缓存这些事情，连在一起，就是一个责任链模式。之前我学习责任链模式只看过Demo，看过的很多开源项目也没人用，可能也没人想得到用，在这里我才真正学会了这种设计模式。</p>
+<p>在项目里我没有用过Picasso，但是因为它和Glide使用方法的相似性，我花时间看了它的源码。然后我才发现Picasso和Glide完全走了两个极端，Picasso算是大道至简，只有一个包，能不做的事情都不做，所有目的都只为图片的加载。而Glide则开放了所有的接口，所有步骤都可以定制，甚至可以像我那样为具体需求增加自己的feature。</p>
+<p>在接触热修复的时候读了Tinker的源码。对Tinker我是带着崇拜的态度去读的，毕竟一个通用热修复框架的难度在我看来是比一般的框架难度上升一个级别的，要兼容不同版本的API，兼容不同的机型，同时还要面对越来越多的热修复场景。这个项目的源码分析我自己会单写一篇。</p>
+<p>至于其他库的源码，比如Volley、Retrofit，Android SDK的RecyclerView、Handler、AsyncTask这些，出于各种原因也都读过。只能说看这些优秀源码越多，越知道自己不能只停留在使用的层面，要想更进一步，读源码算是个捷径。</p>
+<p><strong>说了这么多，无论是出于以上三种的哪一种动机，其实都不重要。如果对编程有所追求，想在自己这个方向有所建树，阅读源码肯定是不可或缺的一步。很多人平时停留在会用即可，不去深挖，想跳槽时又只能在简历上写些熟悉某些库的使用，谈到实现细节一问三不知。其实我们现在做开发都明白，库的封装性在越来越高，学习成本越来越低，一般的库只学基本使用，可能就是一个小时的事情，而对原理的掌握才是与别人区分开的标志。另外，很多人停留在会用的阶段也与需求难度和软件的受众数量有关，但是在一个成熟的、日活百万甚至千万级的APP里，面对千奇百怪的需求，只是会用这个库，恐怕只会让你掉进坑里再也出不来了。</strong></p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2017/04/19/Tinker源码分析/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Tinker源码分析</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2017 Drizzle Zhang
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+
+<script>
+	var yiliaConfig = {
+		fancybox: undefined,
+		mathjax: undefined,
+		animate: undefined,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: undefined
+	}
+</script>
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="/js/main.js" type="text/javascript"></script>
+
+
+
+
+
+
+  </div>
+</body>
+</html>

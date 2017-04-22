@@ -104,6 +104,91 @@
 
       <div class="body-wrap">
   
+    <article id="_posts-阅读源码的半程总结-为什么要阅读源码" class="article article-type-_posts" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2017/04/22/阅读源码的半程总结-为什么要阅读源码/" class="article-date">
+  	<time datetime="2017-04-22T06:42:48.000Z" itemprop="datePublished">2017-04-22</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/04/22/阅读源码的半程总结-为什么要阅读源码/">阅读源码的半程总结-为什么要阅读源码</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>我工作时间并不长，阅读的源码也不够多，这篇文章只能说是算是对自己这方面方法论的一个总结，或者更多的是从我工作和做Android这方面的角度分析问题。至于为什么是半程总结，因为以后有了新的感受和技能，肯定还要回头来更新。</p>
+<h2 id="W"><a href="#W" class="headerlink" title="W"></a>W</h2><p>为什么要读源码？我觉得其实很多人都没有答案。</p>
+<p>我见过最多的，可能就是对一个函数的使用不清楚，Android完全开源，点进去看看这个方法干了啥，可能抛出什么异常，撑死了再看一下注释，这也就算是读过源码了。可能是我自己现在做Android开发的原因？或者是现在编程语言和框架发展太快？好像我见过的许多人都热衷于学习新框架的用法，做一个项目就等同于推依赖库。</p>
+<p>我见过知乎的一个问题：<a href="https://www.zhihu.com/question/34452706" target="_blank" rel="external">现在android开发都会用到那些快速开发框架或者第三库？</a>。去年的这个时候看到这个问题下面的回答我可能就是会心一笑，因为我也这么做，毕竟初级工程师嘛，哪考虑那么多？GitHub上的star数也能反映很大的问题，一个项目用个RxJava+Retrofit+MD+Dagger+MVP，当然，像OkHttp、Glide、ButterKnife这些已经是必备了，然后写一篇文章宣传下，star数就蹭蹭得涨，我之前闲的时候clone个几个项目看过代码，实话说代码质量真不敢恭维。把这几个库放在一个成熟项目的团队里让大家用，首先，你能保证API是Restful么？你能保证大家都能接受RxJava的学习曲线么，换句话说，学了RxJava的几个操作符，就真的明白什么是响应式编程了么？你能承担项目整体重构成MVP结构的风险么？这几个库都是现在Android开发很棒的库，都是很“潮”的东西，但是不客气的说，除了RxJava学习曲线比较抖，其他这些库现在都是傻瓜式使用，全都有完整的官方文档和Wiki，真的是要啥有啥，只学这些库的使用的话真的没有什么成本。</p>
+<p>吐槽完毕，言归正传。我把读源码分为三种情况：为了修复bug被动阅读，为了技术选型去主动阅读，为了提升自己去阅读。</p>
+<h4 id="被动阅读源码"><a href="#被动阅读源码" class="headerlink" title="被动阅读源码"></a>被动阅读源码</h4><blockquote>
+<p>以下是本人上OkHttp的真实经历</p>
+</blockquote>
+<p>被动就是现在在你的主导下，上了一个新依赖库，你在上线之前做了充分的工作，前期做了社区调研，了解了大家对这个库的各种看法，通读了wiki，甚至看了很多issue，接着在引入项目的时候做了极致的封装，保证与业务代码完全解耦，唯独没有读源代码，毕竟这是件费力不讨好的事儿。万事俱备，上线！然后，你从没有见过的各种bug就接踵而至，很多bug都Google不到，Wiki也不会说我们这个库有啥啥啥的毛病，万幸还有错误栈可以看，没办法了，锅是你的，看源代码虽然像便秘，也只能硬着头皮上啦！</p>
+<p>这时候就开始被动读源码了。一般来说，大多数bug只要根据错误信息，看看是哪个函数抛出来的错误，再循着传递的参数找到底，问题差不多就能解决了。但是总有那种问题，看起来不是你用的库抛出来的，之前从来没出过，只有你的这个版本有，还特别多，别人不由得就怀疑是你的锅，即使是为了自证清白（一般都不清白），也得把问题的根源找到然后解决了。这是一个最痛苦的过程，对于一个影响全局的库来说，任何地方都有可能出问题，到这里，通读源码就是唯一的办法了，任何库都有妥协和脏代码，只有从这部分东西才能猜出问题出在哪里。</p>
+<p>因为这部分问题的解释涉及到我们一部分核心业务逻辑，就不多讲了。只能说如果一个影响全局的库已经成功在一个项目了稳定运行多年，已经调试到没有问题的状态，除非一些强制客观因素必须换功能更强大的库，否则一定要谨慎。</p>
+<h4 id="主动阅读源码"><a href="#主动阅读源码" class="headerlink" title="主动阅读源码"></a>主动阅读源码</h4><blockquote>
+<p>以下是本人上Glide的真实经历</p>
+</blockquote>
+<p>吸取了上面的教训，在换Glide的之前我主动通读了Glide的源代码，即便如此，我也没敢擅自动手。Android最怕的就是莫名其妙的OOM，而换图片加载库则可能会爆发大量的OOM，这时候读完代码也没用，只能用本方法一步一步去检测内存问题。但是后来我们要全局支持gif格式，而UIL没有这个功能，也没法做扩展，这时候就只能上Glide了。</p>
+<p>Glide相对于UIL是比较新的，功能也更多，读完源码之后也被它强大的扩展性震惊了。图片从发起请求到最终展示，真的是每一步都有接口可以重新实现。上线之后并没有预计的出现太多的问题，但是在中间做封装的时候有两个功能让读过的源码有了用武之地：</p>
+<ul>
+<li><p>一是UIL也是很厉害的，它实现了Picasso和Glide都没有做到的加载视频缩略图，只要传入视频路径，就能直接展示一张缩略图。读过Glide的源码之后，其实这个不算难事，Glide从源路径获取数据这部分是通过ModelLoader去做的，只要实现一个专门ModelLoader，再结合SDK提供的ThumbnailUtil工具类，就可以直接加载视频缩略图了。</p>
+</li>
+<li><p>二是我们要做一个全局的视频加载库，可以实现从下载到播放的过程，与图片加载库没有本质区别，还少了一步内存缓存。这部分就要关心Glide最终加载的过程了，看源码我们能知道into（）方法里最终ImageView会被包装成一个Target来展示图片，那我们当然也可以重写Target来展示视频了，而且还充分利用了Glide的其他特性，比我们自己写一个视频加载框架要更省事也更强大。</p>
+</li>
+</ul>
+<p>在进行框架调研时，主动通读源码的好处是显而易见的，因为在封装的时候会尽量避开各种坑，在遇到坑时也能够根据框架的设计特性和扩展性进行解决或者规避。</p>
+<h4 id="为了学习而读源码"><a href="#为了学习而读源码" class="headerlink" title="为了学习而读源码"></a>为了学习而读源码</h4><p>以上两种情况都属于为了具体需求而做的工作，很大程度是为了解决和避免问题。这种情况就是个人提升的关键了。</p>
+<p>首先说从不主动读源码的坏处：一是容易养成一切靠Google、Stackoverfolw和GitHub的习惯，只会复制粘贴和调试，自己无法独立产出。二是你所处的环境里最厉害的人就是你的上限了，因为他写的代码是你能看到的代码的上限。</p>
+<p>优秀的框架基本都是大神或者优质团队的代码精华，敢做开源项目的一般都是对框架功能和代码质量有极高信心的人，所以找一些流行的框架，通读源码，学习其中的细节和设计模式，对自己的日常工作肯定是有很大好处的。还是以我自己举例子。</p>
+<p>在被动读了OkHttp之后，我后来又重读了一遍。大家都知道Interceptor是OkHttp一个很强大的接口，利用这个接口几乎可以在一个完整的请求中做任何事情。但是其实在OkHttp内部也是用Interceptor做了重定向、连接服务器、发送和接收请求以及缓存这些事情，连在一起，就是一个责任链模式。之前我学习责任链模式只看过Demo，看过的很多开源项目也没人用，可能也没人想得到用，在这里我才真正学会了这种设计模式。</p>
+<p>在项目里我没有用过Picasso，但是因为它和Glide使用方法的相似性，我花时间看了它的源码。然后我才发现Picasso和Glide完全走了两个极端，Picasso算是大道至简，只有一个包，能不做的事情都不做，所有目的都只为图片的加载。而Glide则开放了所有的接口，所有步骤都可以定制，甚至可以像我那样为具体需求增加自己的feature。</p>
+<p>在接触热修复的时候读了Tinker的源码。对Tinker我是带着崇拜的态度去读的，毕竟一个通用热修复框架的难度在我看来是比一般的框架难度上升一个级别的，要兼容不同版本的API，兼容不同的机型，同时还要面对越来越多的热修复场景。这个项目的源码分析我自己会单写一篇。</p>
+<p>至于其他库的源码，比如Volley、Retrofit，Android SDK的RecyclerView、Handler、AsyncTask这些，出于各种原因也都读过。只能说看这些优秀源码越多，越知道自己不能只停留在使用的层面，要想更进一步，读源码算是个捷径。</p>
+<p><strong>说了这么多，无论是出于以上三种的哪一种动机，其实都不重要。如果对编程有所追求，想在自己这个方向有所建树，阅读源码肯定是不可或缺的一步。很多人平时停留在会用即可，不去深挖，想跳槽时又只能在简历上写些熟悉某些库的使用，谈到实现细节一问三不知。其实我们现在做开发都明白，库的封装性在越来越高，学习成本越来越低，一般的库只学基本使用，可能就是一个小时的事情，而对原理的掌握才是与别人区分开的标志。另外，很多人停留在会用的阶段也与需求难度和软件的受众数量有关，但是在一个成熟的、日活百万甚至千万级的APP里，面对千奇百怪的需求，只是会用这个库，恐怕只会让你掉进坑里再也出不来了。</strong></p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/">Android</a></li></ul>
+	</div>
+
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
     <article id="_posts-Tinker源码分析" class="article article-type-_posts" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -824,124 +909,6 @@
 <h4 id="String-javaMaxHeapSize"><a href="#String-javaMaxHeapSize" class="headerlink" title="String javaMaxHeapSize"></a>String javaMaxHeapSize</h4><p>设置java最大堆内存的值，必须是1024M的倍数</p>
 <h4 id="boolean-preDexLibraries"><a href="#boolean-preDexLibraries" class="headerlink" title="boolean preDexLibraries"></a>boolean preDexLibraries</h4><p>是否将引用的库提前转换为dex，开启这个选项可以加速增量模式，但是在clean项目的时候会变慢。</p>
 <p>在一般情况下（注意是一般情况），将这几个配置设为<code>true</code>并且增大<code>javaMaxHeapSize</code>的值（在电脑配置允许的情况下），可以显著加快项目build的速度，当然偶尔也会遇到一些奇怪的BUILD FAILED的问题，这个就只能看具体情况了。</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/">Android</a></li></ul>
-	</div>
-
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-HotFix" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2016/07/02/HotFix/" class="article-date">
-  	<time datetime="2016-07-02T09:25:11.000Z" itemprop="datePublished">2016-07-02</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/07/02/HotFix/">HotFix</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>Android的项目结构越来越大，相对应出现Bug的情况也越来越多，传统机制下每当出现一个紧急Bug都必须重新打包、测试、发布，用户需要下载、覆盖安装,成本很高，所以很多团队都在寻找方法，通过补丁的形式修复Bug，不用重新发布再让用户下载安装。</p>
-<p>我们的Android客户端目前的问题是一些比较重要的逻辑（比如<strong>支付</strong>），在出现Bug的时候需要及时修复，等不及再发一个包到市场上等着用户手动安装更新，所以需要引入一套HotFix的机制。</p>
-<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>现在流行的HotFix方案的原理基本是一致的，主要就是依靠Android的<code>ClassLoader</code>机制。Android中加载类一般用两种：</p>
-<p><code>PathClassLoader</code></p>
-<blockquote>
-<p>Provides a simple {@link ClassLoader} implementation that operates<br>on a list of files and directories in the local file system, but<br>does not attempt to load classes from the network. Android uses<br>this class for its system class loader and for its application<br>class loader(s).</p>
-</blockquote>
-<p><code>DexClassLoader</code>.</p>
-<blockquote>
-<p>A class loader that loads classes from {@code .jar} and<br>{@code .apk} files containing a {@code classes.dex} entry.<br>This can be used to execute code not installed as part of an application.</p>
-</blockquote>
-<p>这两个类都继承自<code>BaseDexClassLoader</code>，再看这个父类的源码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BaseDexClassLoader</span> <span class="keyword">extends</span> <span class="title">ClassLoader</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String originalPath;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> DexPathList pathList;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">BaseDexClassLoader</span><span class="params">(String dexPath, File optimizedDirectory,</span><br><span class="line">            String libraryPath, ClassLoader parent)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(parent);</span><br><span class="line">        <span class="keyword">this</span>.originalPath = dexPath;</span><br><span class="line">        <span class="keyword">this</span>.pathList =</span><br><span class="line">            <span class="keyword">new</span> DexPathList(<span class="keyword">this</span>, dexPath, libraryPath, optimizedDirectory);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> Class&lt;?&gt; findClass(String name) <span class="keyword">throws</span> ClassNotFoundException &#123;</span><br><span class="line">        Class clazz = pathList.findClass(name);</span><br><span class="line">        <span class="keyword">if</span> (clazz == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> ClassNotFoundException(name);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> clazz;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<p>再看<code>DexPathList</code>的<code>findClass</code>方法：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> Class <span class="title">findClass</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (Element element : dexElements) &#123;</span><br><span class="line">            DexFile dex = element.dexFile;</span><br><span class="line">            <span class="keyword">if</span> (dex != <span class="keyword">null</span>) &#123;</span><br><span class="line">                Class clazz = dex.loadClassBinaryName(name, definingContext);</span><br><span class="line">                <span class="keyword">if</span> (clazz != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    <span class="keyword">return</span> clazz;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
-<p>再看<code>DexFile</code>的相关源码：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> Class <span class="title">loadClassBinaryName</span><span class="params">(String name, ClassLoader loader)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> defineClass(name, loader, mCookie);</span><br><span class="line">    &#125;</span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">native</span> <span class="keyword">static</span> Class <span class="title">defineClass</span><span class="params">(String name, ClassLoader loader, <span class="keyword">int</span> cookie)</span></span>;</span><br></pre></td></tr></table></figure></p>
-<p>可以看到<code>BaseDexClassLoader</code>类里有一个<code>pathList</code>对象，这个对象其实就是一个包含多个DexFile的有序集合，加载类的时候其实就是按顺序遍历dex文件，然后从当前遍历的dex文件中找类，如果找类则返回，如果找不到从下一个dex文件继续查找。所谓的HotFix其实就是在这个过程中，把修改后的类文件打包一个dex文件，插入到<code>pathList</code>的第一个位置，在这个过程中如果出现了重复的类，最终会使用第一个找到的类，所以这时候目标类就已经被替换掉了。</p>
-<h2 id="存在的问题"><a href="#存在的问题" class="headerlink" title="存在的问题"></a>存在的问题</h2><h4 id="CLASS-ISPREVERIFIED"><a href="#CLASS-ISPREVERIFIED" class="headerlink" title="CLASS_ISPREVERIFIED"></a><code>CLASS_ISPREVERIFIED</code></h4><p>如果不加处理使用以上的方法，那么在加载补丁的时候首先会出现这个异常：<br><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java.lang.IllegalAccessError: Class ref in pre-verified class resolved to unexpected implementation</span><br></pre></td></tr></table></figure></p>
-<p>因为在DexPrepare.cpp将dex转化成odex的过程中，会在DexVerify.cpp进行校验，验证如果static方法、private方法、构造函数等，直接引用到的类（第一层级关系，不会进行递归搜索）和当前类是否在同一个dex，如果是，则会打上<code>CLASS_ISPREVERIFIED</code>标志。所以要想办法阻止相关类被打上<code>CLASS_ISPREVERIFIED</code>标志。<br>最直接的方法就是改变代码结构，使要热修复的类引用其他dex中的类，当然这样灵活性就降低了。因为bug无处不在，出现bug的时候我们是不知道要修复哪些类的。<br>另外就是用工具javassist或者ASM进行动态代码注入。</p>
-<h4 id="Android-6-0以上的权限"><a href="#Android-6-0以上的权限" class="headerlink" title="Android 6.0以上的权限"></a>Android 6.0以上的权限</h4><p>因为在6.0以后一些敏感权限是需要动态申请的，热修复因为都需要下载或者生成一个patch补丁包放在本地，所以是需要在这时候申请读写SD卡这一组权限的。</p>
-<h4 id="ProGuard"><a href="#ProGuard" class="headerlink" title="ProGuard"></a>ProGuard</h4><p>在给目标类进行动态代码注入的时候，是通过反射根据包名和类名获取Class的，如果这时候代码已经被混淆的话，包名和类名都发生了变化，这个获取过程出错的几率比较大。</p>
-<h2 id="HotFix"><a href="#HotFix" class="headerlink" title="HotFix"></a>HotFix</h2><p>我使用的框架是GitHub上dodola的<a href="https://github.com/dodola/HotFix" target="_blank" rel="external">HotFix</a>这个项目，同类的项目有<a href="https://github.com/jasonross/Nuwa" target="_blank" rel="external">Nuwa</a>,在Android端进行热修复的实现思路都是类似的。这一部分看项目源码就可以。</p>
-<p>如何解决<code>CLASS_ISPREVERIFIED</code>的问题？<br>文档里说的比较清楚了：</p>
-<blockquote>
-<p>解决的方法就是在类中引用一个其他dex中的类，但是源码方式的引用会将引用的类打入同一个dex中，所以我们需要找到一种既能编译通过并且将两个互相引用的类分离到不同的dex中，于是就有了这个动态的代码植入方式。</p>
-</blockquote>
-<h2 id="不同解决方案的比较"><a href="#不同解决方案的比较" class="headerlink" title="不同解决方案的比较"></a>不同解决方案的比较</h2><h4 id="HotFix-1"><a href="#HotFix-1" class="headerlink" title="HotFix"></a><a href="https://github.com/dodola/HotFix" target="_blank" rel="external">HotFix</a></h4><ul>
-<li>代码虽然写的比较死，但是容易理解，可定制性强</li>
-<li>在打包的时候就需要给目标类动态注入代码，相当于打一个TAG，避免出现<code>CLASS_ISPREVERIFIED</code>的问题。如果给项目所有的类都这么做的话工作量比较大。而且补丁也需要自己制作。</li>
-</ul>
-<h4 id="Nuwa"><a href="#Nuwa" class="headerlink" title="Nuwa"></a><a href="https://github.com/jasonross/Nuwa" target="_blank" rel="external">Nuwa</a></h4><ul>
-<li>自动化做的比较好，制作补丁有专门的gradle插件。</li>
-<li>坏消息是作者似乎不准备再维护这个项目了，所以gradle版本升级之后它的gradle插件就不能用了。GitHub上一些人提了issue作者也不准备解决了，坑比较多。</li>
-</ul>
-<h4 id="DroidFix"><a href="#DroidFix" class="headerlink" title="DroidFix"></a><a href="https://github.com/bunnyblue/DroidFix" target="_blank" rel="external">DroidFix</a></h4><ul>
-<li>原理和HotFix一致，包括对<code>CLASS_ISPREVERIFIED</code>的处理方法。</li>
-<li>对接口的热修复支持不好。</li>
-<li>这个项目的源码我没仔细看，有待研究。</li>
-</ul>
-<h4 id="RocooFix"><a href="#RocooFix" class="headerlink" title="RocooFix"></a><a href="https://github.com/dodola/RocooFix" target="_blank" rel="external">RocooFix</a></h4><ul>
-<li>HotFix的作者的另一个项目，支持重启热修复和实时热修复。实时热修复用的是另一个开源项目<a href="https://github.com/asLody/legend" target="_blank" rel="external">Legend</a>。我们暂且只用重启热修复这部分代码。</li>
-<li>按照项目描述的是无需关注混淆问题，无需手动制作补丁，而且作者在及时填坑。</li>
-</ul>
-<h2 id="补丁版本管理"><a href="#补丁版本管理" class="headerlink" title="补丁版本管理"></a>补丁版本管理</h2><p>阿里的<a href="https://github.com/alibaba/AndFix" target="_blank" rel="external">AndFix</a>现在给出的方案是每个补丁对应的文件中有个Create-Time的字段，根据这个字段按照顺序打补丁。</p>
-<h2 id="安全性"><a href="#安全性" class="headerlink" title="安全性"></a>安全性</h2><p>目前的方案，补丁是下载下来放在本地一个目录下的，用户是可以手动替换掉补丁的。可以通过对补丁包的MD5进行验证避免补丁被恶意替换。</p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ul>
-<li>我们目前的项目实现热修复的话，用今天讲的这种原理理论上就可以了。</li>
-<li>因为现在项目代码不混淆，所以不需要考虑这方面的问题。但是项目现在使用第三方加固的话，尚不清楚加固的原理，根据一些用过热修复的人说的，一些第三方加固会将Android原有的<code>PathClassLoader</code>替换为他们自己的<code>loader</code>，这样的话就需要做单独处理了。</li>
-<li><code>CLASS_ISPREVERIFIED</code>用目前通用的动态注入字节码的方式就可以处理。</li>
-<li>本地制作补丁包实现自动化写一个脚本或者gradle插件。</li>
-<li>多个补丁的版本管理和安全问题也需要后端的配合。</li>
-<li>紧急情况可以使用这个方案，一次加载多个dex补丁必然导致性能的问题。</li>
-<li>其他的问题只能是在项目里真正使用之后再寻求解决方案了。</li>
-</ul>
-<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><ul>
-<li><a href="http://www.infoq.com/cn/articles/ctrip-android-dynamic-loading" target="_blank" rel="external">携程Android App插件化和动态加载实践</a></li>
-<li><a href="https://mp.weixin.qq.com/s?__biz=MzI1MTA1MzM2Nw==&amp;mid=400118620&amp;idx=1&amp;sn=b4fdd5055731290eef12ad0d17f39d4a&amp;scene=1&amp;srcid=1106Imu9ZgwybID13e7y2nEi#wechat_redirect" target="_blank" rel="external">安卓App热补丁动态修复技术介绍</a></li>
-<li><a href="http://my.oschina.net/853294317/blog/308583" target="_blank" rel="external">Android dex分包方案</a></li>
-<li><a href="http://tech.meituan.com/mt-android-auto-split-dex.html" target="_blank" rel="external">美团Android DEX自动拆包及动态加载简介</a></li>
-<li><a href="http://kymjs.com/code/2016/05/08/01" target="_blank" rel="external">Android 热修复，没你想的那么难</a></li>
-</ul>
-<h3 id="延伸"><a href="#延伸" class="headerlink" title="延伸"></a>延伸</h3><ul>
-<li><a href="https://github.com/CtripMobile/DynamicAPK" target="_blank" rel="external">携程DynamicAPK</a></li>
-<li><a href="https://github.com/DroidPluginTeam/DroidPlugin" target="_blank" rel="external">奇虎360 DroidPlugin</a></li>
-<li><a href="https://github.com/alibaba/AndFix" target="_blank" rel="external">阿里AndFix</a></li>
-</ul>
 
       
     </div>
