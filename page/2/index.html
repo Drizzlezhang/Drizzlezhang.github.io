@@ -104,6 +104,69 @@
 
       <div class="body-wrap">
   
+    <article id="post-Android-Gradle-DexOptions" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/07/03/Android-Gradle-DexOptions/" class="article-date">
+  	<time datetime="2016-07-03T09:12:05.000Z" itemprop="datePublished">2016-07-03</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/07/03/Android-Gradle-DexOptions/">Android Gradle DexOptions</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近在Gradle的<code>dexOptions</code>这部分踩了很多坑，浪费了很多时间。这部分的东西其实官方文档和StackOverFlow上基本都讲清楚了，所以以翻译和记录为主。</p>
+<h2 id="Java和Android在编译过程中的区别"><a href="#Java和Android在编译过程中的区别" class="headerlink" title="Java和Android在编译过程中的区别"></a>Java和Android在编译过程中的区别</h2><p>当编译一段典型的Java代码时，会产生*.class文件，一个class文件包含标准Java字节码，被我们常见的JVM执行。</p>
+<p>Android的编译过程则有所不同，编译器不会产生class文件，而会产生.dex文件（这个大家应该都不陌生了），.dex文件会被Android Virtual Machine (也就是我们常说的dalvik虚拟机)执行，而不是被JVM执行。<br>所以<code>dexOptions</code>是一个确定java代码转换为Android代码的gradle配置，配置项大概包括以下几个：<br><figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">    dexOptions &#123;</span><br><span class="line">        jumboMode <span class="keyword">true</span></span><br><span class="line">        incremental <span class="keyword">true</span></span><br><span class="line">        javaMaxHeapSize <span class="string">"4g"</span></span><br><span class="line">        preDexLibraries <span class="keyword">true</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>然后对这几个配置项大概做一个解释：</p>
+<h4 id="boolean-incremental"><a href="#boolean-incremental" class="headerlink" title="boolean incremental"></a>boolean incremental</h4><p>是否对dex开启增量模式配置，这个选项有许多限制和问题，而且有可能不起作用，谨慎使用。</p>
+<h4 id="boolean-jumboModeal"><a href="#boolean-jumboModeal" class="headerlink" title="boolean jumboModeal"></a>boolean jumboModeal</h4><p>是否对dex开启特大模式（直接翻译的···）</p>
+<h4 id="String-javaMaxHeapSize"><a href="#String-javaMaxHeapSize" class="headerlink" title="String javaMaxHeapSize"></a>String javaMaxHeapSize</h4><p>设置java最大堆内存的值，必须是1024M的倍数</p>
+<h4 id="boolean-preDexLibraries"><a href="#boolean-preDexLibraries" class="headerlink" title="boolean preDexLibraries"></a>boolean preDexLibraries</h4><p>是否将引用的库提前转换为dex，开启这个选项可以加速增量模式，但是在clean项目的时候会变慢。</p>
+<p>在一般情况下（注意是一般情况），将这几个配置设为<code>true</code>并且增大<code>javaMaxHeapSize</code>的值（在电脑配置允许的情况下），可以显著加快项目build的速度，当然偶尔也会遇到一些奇怪的BUILD FAILED的问题，这个就只能看具体情况了。</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/">Android</a></li></ul>
+	</div>
+
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
     <article id="post-HotFix" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
