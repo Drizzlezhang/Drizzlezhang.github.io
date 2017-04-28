@@ -104,6 +104,63 @@
 
       <div class="body-wrap">
   
+    <article id="_posts-Retrofit源码分析" class="article article-type-_posts" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2017/04/27/Retrofit源码分析/" class="article-date">
+  	<time datetime="2017-04-27T12:39:03.000Z" itemprop="datePublished">2017-04-27</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/04/27/Retrofit源码分析/">Retrofit源码分析</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><p>Retrofit现在不像两年前是个新鲜事物，大版本已经到Retrofit2了，越来越多的新项目和开源项目会理所应当地使用OkHttp + Retrofit + RxJava + Gson这一套进行网络请求，这也侧面反映了Retrofit的强大（<em>插一句，这几个库厉害不代表会用就厉害，其实用了就知道，这几个的搭配使用的优势就是傻瓜化</em>）。优秀的框架在使用和扩展上会越来越简单，同时又会更强大，在我看来Retrofit相对于Volley以及更早的框架就是这样。而这时候只会用是不够的，知其然且知其所以然，才能真正学到本事。</p>
+<h2 id="基本流程"><a href="#基本流程" class="headerlink" title="基本流程"></a>基本流程</h2><p>这里就不自己画了，借助stay大神的图，毕竟这张图画的太完美了：</p>
+<p><img src="https://blog.piasy.com/img/201606/retrofit_stay.png" alt=""></p>
+<h2 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h2>
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/">Android</a></li></ul>
+	</div>
+
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
     <article id="_posts-阅读源码的半程总结-读源码都读什么" class="article article-type-_posts" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -130,20 +187,20 @@
       
         <p>讲完了为什么要读源码，然后再说读源码都读什么。我应该不会写怎么读的问题了，毕竟看代码跟写代码不一样，属于一个很玄学的东西，每个人都有自己的一套思路。</p>
 <p>那么读源码都读什么？说到底也就是读源码能学到什么？从我自己的角度，大概能分为几个角度：学习优秀的解决方案；学习优秀的代码风格；学习设计模式的使用场景；学习搭架构的思路；学习一些平时没见过和想不到的黑科技。</p>
-<h3 id="学习优秀的解决方案"><a href="#学习优秀的解决方案" class="headerlink" title="学习优秀的解决方案"></a>学习优秀的解决方案</h3><p>这个算是读源码比较功利也比较实际的用途。同一个需求永远都会有不同的解决方案，这时候就可以通过看类似框架的源码来搞清楚最成熟的解决方案是什么。一个简单的例子，在我们现有的项目中图片选择器采用了获取图片和视频绝对路径的方案，最终为了显示视频缩略图，我还必须定制一下Glide。但是知乎最近开源的Matisse，获取的就是图片和文件content:// 格式的URL，Glide在解析这种路径有对应的MediaStoreStreamLoader,完美解决了展示视频缩略图的问题。虽然同样解决了问题，但是Matisse解决的似乎就更加优雅。</p>
-<h3 id="学习优秀的代码风格"><a href="#学习优秀的代码风格" class="headerlink" title="学习优秀的代码风格"></a>学习优秀的代码风格</h3><p>只学代码风格，我个人觉得最好读一些通用的、底层的东西。比如Java的代码风格，那就去读JDK一些常用类，Js的代码风格，我个人可能就会看看经典的jQuery或者vue.js。没有什么三方库的代码会比它们的代码更简洁，使用更准确。</p>
-<h3 id="学习设计模式"><a href="#学习设计模式" class="headerlink" title="学习设计模式"></a>学习设计模式</h3><p>写代码过了初级阶段，多多少少都会开始用到设计模式，无论是刻意还是无意。可是设计模式那么多种，书里教了这是怎么回事，到了真正设计架构的时候，却不知道该用哪种了。简单的单例模式、建造者模式、工厂方法模式就不说了，基本都是固定的套路和使用场景。但是到了稍微复杂点的，我是确实不清楚该不该用，该用哪种，该怎么用。用少了，代码不解耦，扩展性差，不好维护。用多了，变成了“面向设计模式编程”，代码量成倍扩张，却没做多少事。这时候就有优质的源码给我们铺路了。</p>
+<h2 id="学习优秀的解决方案"><a href="#学习优秀的解决方案" class="headerlink" title="学习优秀的解决方案"></a>学习优秀的解决方案</h2><p>这个算是读源码比较功利也比较实际的用途。同一个需求永远都会有不同的解决方案，这时候就可以通过看类似框架的源码来搞清楚最成熟的解决方案是什么。一个简单的例子，在我们现有的项目中图片选择器采用了获取图片和视频绝对路径的方案，最终为了显示视频缩略图，我还必须定制一下Glide。但是知乎最近开源的Matisse，获取的就是图片和文件content:// 格式的URL，Glide在解析这种路径有对应的MediaStoreStreamLoader,完美解决了展示视频缩略图的问题。虽然同样解决了问题，但是Matisse解决的似乎就更加优雅。</p>
+<h2 id="学习优秀的代码风格"><a href="#学习优秀的代码风格" class="headerlink" title="学习优秀的代码风格"></a>学习优秀的代码风格</h2><p>只学代码风格，我个人觉得最好读一些通用的、底层的东西。比如Java的代码风格，那就去读JDK一些常用类，Js的代码风格，我个人可能就会看看经典的jQuery或者vue.js。没有什么三方库的代码会比它们的代码更简洁，使用更准确。</p>
+<h2 id="学习设计模式"><a href="#学习设计模式" class="headerlink" title="学习设计模式"></a>学习设计模式</h2><p>写代码过了初级阶段，多多少少都会开始用到设计模式，无论是刻意还是无意。可是设计模式那么多种，书里教了这是怎么回事，到了真正设计架构的时候，却不知道该用哪种了。简单的单例模式、建造者模式、工厂方法模式就不说了，基本都是固定的套路和使用场景。但是到了稍微复杂点的，我是确实不清楚该不该用，该用哪种，该怎么用。用少了，代码不解耦，扩展性差，不好维护。用多了，变成了“面向设计模式编程”，代码量成倍扩张，却没做多少事。这时候就有优质的源码给我们铺路了。</p>
 <p>在被动读了OkHttp之后，我后来又主动重读了一遍。大家都知道Interceptor是OkHttp一个很强大的接口，利用这个接口几乎可以在一个完整的请求中做任何事情。但是其实在OkHttp内部也是用Interceptor做了重定向、连接服务器、发送和接收请求以及缓存这些事情，连在一起，就是一个责任链模式。</p>
 <p>在项目里我没有用过Picasso，但是因为它和Glide使用方法的相似性，我花时间看了它的源码。然后我才发现Picasso和Glide完全走了两个极端，Picasso算是大道至简，只有一个包，能不做的事情都不做，所有目的都只为图片的加载。而Glide则开放了所有的接口，所有步骤都可以定制，甚至可以像我那样为具体需求增加自己的feature。但是为什么我们会觉得他们用起来差不多呢？说到底他们都用了外观模式，我们在调用的时候只知道拿起Glide和Picasso开始用，其他的工作都交给内部去做了。</p>
 <p>而我读过的源码中设计模式的集大成者，应该是Retrofit了。这个库的源码不多不少，但是加上配套的一堆Adapter和Convertor，外观模式、代理模式、策略模式、适配器模式、装饰模式都用到了，甚至同一个接口不同的实现都可以用到不同的设计模式。完全解耦，所有步骤与Glide一样都可以定制。</p>
 <p>对于设计模式的学习，我个人的感受还是应该多看多写才能真正掌握并最终能够游刃有余，而优秀的源码可是说是提供了最完美的解决方案。</p>
-<h3 id="学习搭架构的思路"><a href="#学习搭架构的思路" class="headerlink" title="学习搭架构的思路"></a>学习搭架构的思路</h3><p>从做Android开发来说，每个项目最常用的就是网路库和图片库了。如果能从零设计这两个库，那么其他的架构都是大同小异了。</p>
+<h2 id="学习搭架构的思路"><a href="#学习搭架构的思路" class="headerlink" title="学习搭架构的思路"></a>学习搭架构的思路</h2><p>从做Android开发来说，每个项目最常用的就是网路库和图片库了。如果能从零设计这两个库，那么其他的架构都是大同小异了。</p>
 <p>以网络库Volley为例，读完源码，基本能形成：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#10;Request --&#62; Dispatcher --&#62; Cache --&#62; HttpStack</span><br></pre></td></tr></table></figure>
 <p>这一套思路。其实再看其他的网路库都大同小异。我们自己实现，根据这个思路基本就足够了。</p>
 <p>再以Glide为例，整个架构基本是由RequestManager、Engine、Cache、Target这几部分组成，其他的也是差不多的思路。</p>
 <p>优质的库都是在大量试错和妥协后的结果，基本是用最合理的方式实现最终的需求，在设计类似的框架时，先借鉴，再改进，设计其他的架构差不多也是这么一套方法。</p>
-<h3 id="学习一些黑科技"><a href="#学习一些黑科技" class="headerlink" title="学习一些黑科技"></a>学习一些黑科技</h3><p>这个就属于堆经验了。同样类型的库架构上大同小异，但是每个库又有它的独到之处，只有真正把源码读完，才能学习到有意思的地方。这部分只举例子，不具体分析：</p>
+<h2 id="学习一些黑科技"><a href="#学习一些黑科技" class="headerlink" title="学习一些黑科技"></a>学习一些黑科技</h2><p>这个就属于堆经验了。同样类型的库架构上大同小异，但是每个库又有它的独到之处，只有真正把源码读完，才能学习到有意思的地方。这部分只举例子，不具体分析：</p>
 <ul>
 <li><p>Glide利用一个空Fragment的生命周期实现每个请求与所属上下文生命周期的绑定</p>
 </li>
@@ -157,7 +214,7 @@
 </li>
 </ul>
 <p>这些有意思的设计细节我们不一定能用得到，但是能为我们解决平时的问题提供更多的思路，同时也能学到更多不常用的知识。</p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>除了这些提到的库，其他一些源码我也多少度过，只能说代码神奇就在这里，每个人的代码风格、设计思路都不一样，但是最终都能产出一个优质的开源框架，很多苦看起来架构差不多，但是内部实现又是千奇百怪，同一种模块似乎每种设计模式都能派上用场。读源码，抛去为了解决问题、为了提升技能的这些功利性的想法，只是体会这些强人的思路，已经是一种享受了吧。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>除了这些提到的库，其他一些源码我也多少度过，只能说代码神奇就在这里，每个人的代码风格、设计思路都不一样，但是最终都能产出一个优质的开源框架，很多苦看起来架构差不多，但是内部实现又是千奇百怪，同一种模块似乎每种设计模式都能派上用场。读源码，抛去为了解决问题、为了提升技能的这些功利性的想法，只是体会这些强人的思路，已经是一种享受了吧。</p>
 
       
     </div>
@@ -217,13 +274,13 @@
 <p>我见过最多的，可能就是对一个函数的使用不清楚，Android完全开源，点进去看看这个方法干了啥，可能抛出什么异常，撑死了再看一下注释，这也就算是读过源码了。</p>
 <p>可能是我自己现在做Android开发的原因？或者是现在编程语言和框架发展太快？好像我见过的许多人都热衷于学习新框架的用法，做一个项目就等同于推依赖库。我见过知乎的一个问题：<a href="https://www.zhihu.com/question/34452706" target="_blank" rel="external">现在android开发都会用到那些快速开发框架或者第三库？</a>。去年的这个时候看到这个问题下面的回答我可能就是会心一笑，因为我也这么做，毕竟初级工程师嘛，哪考虑那么多？GitHub上的star数也能反映很大的问题，一个项目用个RxJava+Retrofit+MD+Dagger+MVP，当然，像OkHttp、Glide、ButterKnife这些已经是必备了，然后写一篇文章宣传下，star数就蹭蹭得涨，我之前闲的时候clone个几个项目看过代码，实话说代码质量真不敢恭维。把这几个库放在一个成熟项目的团队里让大家用，首先，你能保证API是Restful么？你能保证大家都能接受RxJava的学习曲线么，换句话说，学了RxJava的几个操作符，就真的明白什么是响应式编程了么？你能承担项目整体重构成MVP结构的风险么？这几个库都是现在Android开发很棒的库，都是很“潮”的东西，但是不客气的说，除了RxJava学习曲线比较抖，其他这些库现在都是傻瓜式使用，全都有完整的官方文档和Wiki，真的是要啥有啥，只学这些库的使用的话真的没有什么成本。</p>
 <p>吐槽完毕，言归正传。我把读源码分为三种情况：为了修复bug被动阅读，为了技术选型去主动阅读，为了提升自己去阅读。</p>
-<h3 id="被动阅读源码"><a href="#被动阅读源码" class="headerlink" title="被动阅读源码"></a>被动阅读源码</h3><blockquote>
+<h2 id="被动阅读源码"><a href="#被动阅读源码" class="headerlink" title="被动阅读源码"></a>被动阅读源码</h2><blockquote>
 <p>以下是本人上OkHttp的真实经历</p>
 </blockquote>
 <p>被动就是现在在你的主导下，上了一个新依赖库，你在上线之前做了充分的工作，前期做了社区调研，了解了大家对这个库的各种看法，通读了wiki，甚至看了很多issue，接着在引入项目的时候做了极致的封装，保证与业务代码完全解耦，唯独没有读源代码，毕竟这是件费力不讨好的事儿。万事俱备，上线！然后，你从没有见过的各种bug就接踵而至，很多bug都Google不到，Wiki也不会说我们这个库有啥啥啥的毛病，万幸还有错误栈可以看，没办法了，锅是你的，看源代码虽然像便秘，也只能硬着头皮上啦！</p>
 <p>这时候就开始被动读源码了。一般来说，大多数bug只要根据错误信息，看看是哪个函数抛出来的错误，再循着传递的参数找到底，问题差不多就能解决了。但是总有那种问题，看起来不是你用的库抛出来的，之前从来没出过，只有你的这个版本有，还特别多，别人不由得就怀疑是你的锅，即使是为了自证清白（一般都不清白），也得把问题的根源找到然后解决了。这是一个最痛苦的过程，对于一个影响全局的库来说，任何地方都有可能出问题，到这里，通读源码就是唯一的办法了，任何库都有妥协和脏代码，只有从这部分东西才能猜出问题出在哪里。</p>
 <p>因为这部分问题的解释涉及到我们一部分核心业务逻辑，就不多讲了。只能说如果一个影响全局的库已经成功在一个项目了稳定运行多年，已经调试到没有问题的状态，除非一些强制客观因素必须换功能更强大的库，否则一定要谨慎。</p>
-<h3 id="主动阅读源码"><a href="#主动阅读源码" class="headerlink" title="主动阅读源码"></a>主动阅读源码</h3><blockquote>
+<h2 id="主动阅读源码"><a href="#主动阅读源码" class="headerlink" title="主动阅读源码"></a>主动阅读源码</h2><blockquote>
 <p>以下是本人上Glide的真实经历</p>
 </blockquote>
 <p>吸取了上面的教训，在换Glide的之前我主动通读了Glide的源代码，即便如此，我也没敢擅自动手。Android最怕的就是莫名其妙的OOM，而换图片加载库则可能会爆发大量的OOM，这时候读完代码也没用，只能用笨方法一步一步去检测内存问题。但是后来我们要全局支持gif格式，而UIL没有这个功能，也没法做扩展，这时候就只能上Glide了。</p>
@@ -235,10 +292,10 @@
 </li>
 </ul>
 <p>在进行框架调研时，主动通读源码的好处是显而易见的，因为在封装的时候会尽量避开各种坑，在遇到坑时也能够根据框架的设计特性和扩展性进行解决或者规避问题。</p>
-<h3 id="为了学习而读源码"><a href="#为了学习而读源码" class="headerlink" title="为了学习而读源码"></a>为了学习而读源码</h3><p>以上两种情况都属于为了具体需求而做的工作，很大程度是为了解决具体问题。接下来这种情况就是个人提升的关键了。</p>
+<h2 id="为了学习而读源码"><a href="#为了学习而读源码" class="headerlink" title="为了学习而读源码"></a>为了学习而读源码</h2><p>以上两种情况都属于为了具体需求而做的工作，很大程度是为了解决具体问题。接下来这种情况就是个人提升的关键了。</p>
 <p>首先说从不主动读源码的坏处：一是容易养成一切靠Google、Stackoverfolw和GitHub的习惯，只会复制粘贴和调试，自己无法独立产出。二是你所处的环境里最厉害的人就是你的上限了，因为他写的代码是你能看到的代码的上限。</p>
 <p>优秀的框架基本都是大神或者优质团队的代码精华，敢做开源项目的一般都是对框架功能和代码质量有极高信心的人，所以找一些流行的框架，通读源码，学习其中的细节和设计模式，对自己的日常工作肯定是有很大好处的。读这些顶级程序员写的代码，无形中也提升了自己的上限。只能说看这些优秀源码越多，越知道自己不能只停留在使用的层面，要想更进一步，读源码算是个捷径。</p>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p><strong>说了这么多，无论是出于以上三种的哪一种动机，其实都不重要。如果对编程有所追求，想在自己这个方向有所建树，阅读源码肯定是不可或缺的一步。很多人平时停留在会用即可，不去深挖，想跳槽时又只能在简历上写些熟悉某些库的使用，谈到实现细节一问三不知，最后又嫌人家要求太高。其实我们现在做开发都明白，库的封装性在越来越高，学习成本越来越低，一般的库只学基本使用，可能就是一个小时的事情，而对原理的掌握才是与别人区分开的标志。另外，很多人停留在会用的阶段也与需求难度和软件的受众数量有关，但是在一个成熟的、日活百万甚至千万级的APP里，面对千奇百怪的需求，只是会用这个库，恐怕只会让你掉进坑里再也出不来了。</strong></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p><strong>说了这么多，无论是出于以上三种的哪一种动机，其实都不重要。如果对编程有所追求，想在自己这个方向有所建树，阅读源码肯定是不可或缺的一步。很多人平时停留在会用即可，不去深挖，想跳槽时又只能在简历上写些熟悉某些库的使用，谈到实现细节一问三不知，最后又嫌人家要求太高。其实我们现在做开发都明白，库的封装性在越来越高，学习成本越来越低，一般的库只学基本使用，可能就是一个小时的事情，而对原理的掌握才是与别人区分开的标志。知其然且知其所以然，才是区分牛人和码农的标志。另外，很多人停留在会用的阶段也与需求难度和软件的受众数量有关，但是在一个成熟的、日活百万甚至千万级的APP里，面对千奇百怪的需求，只是会用这个库，恐怕只会让你掉进坑里再也出不来了。</strong></p>
 
       
     </div>
@@ -347,12 +404,12 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h3><p>前一段时间复习了<code>Glide</code>的源码，而且这次做了文字整理，又被大神的思路震惊了一次。正好赶上清明假，就把用起来特别相似的，出自JakeWarton大神的<code>Picasso</code>的源码也分析一下，同时跟<code>Glide</code>也做个简单的比较。</p>
+        <h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><p>前一段时间复习了<code>Glide</code>的源码，而且这次做了文字整理，又被大神的思路震惊了一次。正好赶上清明假，就把用起来特别相似的，出自JakeWarton大神的<code>Picasso</code>的源码也分析一下，同时跟<code>Glide</code>也做个简单的比较。</p>
 <p><code>Picasso</code>的官网在<a href="http://square.github.io/picasso/" target="_blank" rel="external">http://square.github.io/picasso/</a><br>用法跟<code>Glide</code>基本一致，就不用多废话介绍了，毕竟已经很有名了。这篇分析基于<code>Picasso 2.5.2</code>。</p>
-<h3 id="基本流程"><a href="#基本流程" class="headerlink" title="基本流程"></a>基本流程</h3><p>还是按照规矩先上图：</p>
+<h2 id="基本流程"><a href="#基本流程" class="headerlink" title="基本流程"></a>基本流程</h2><p>还是按照规矩先上图：</p>
 <p><img src="http://omy50xsvp.bkt.clouddn.com/17-4-4/32085605-file_1491296793698_a75d.jpg" alt=""></p>
 <p>看起来有点绕，因为<code>Picasso</code>不像<code>Glide</code>那样类和接口特别多，而是用很少的类实现了强大的功能，那么也就不可避免的有的类承担了多种工作。接下来我们就来分析这些类的作用。</p>
-<h3 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h3><p>我们还是从最基本的<code>Picasso.with(context).load(url).into(view)</code>来分析吧。首先看第一步：</p>
+<h2 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h2><p>我们还是从最基本的<code>Picasso.with(context).load(url).into(view)</code>来分析吧。首先看第一步：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Picasso <span class="title">with</span><span class="params">(@NonNull Context context)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (context == <span class="keyword">null</span>) &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"context == null"</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (singleton == <span class="keyword">null</span>) &#123;</span><br><span class="line">    <span class="keyword">synchronized</span> (Picasso.class) &#123;</span><br><span class="line">      <span class="keyword">if</span> (singleton == <span class="keyword">null</span>) &#123;</span><br><span class="line">        singleton = <span class="keyword">new</span> Builder(context).build();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> singleton;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p><code>with(context)</code>方法本质上什么都没做，<code>Picasso</code>只支持一种上下文，它不管这是<code>ApplicationContext</code>还是<code>Activity</code>，然后返回了一个单例。那我们再看<code>load(url)</code>方法：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> RequestCreator <span class="title">load</span><span class="params">(@Nullable Uri uri)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> RequestCreator(<span class="keyword">this</span>, uri, <span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -371,7 +428,7 @@
 <p>最终结果又到了<code>Picasso</code>里面，在这里，它把最终结果传给<code>Action</code>，<code>Action</code>是一个抽象方法，我们看最典型的<code>ImageViewAction</code>的实现：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="annotation">@Override</span> <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">complete</span><span class="params">(Bitmap result, Picasso.LoadedFrom from)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (result == <span class="keyword">null</span>) &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> AssertionError(</span><br><span class="line">        String.format(<span class="string">"Attempted to complete action with no result!\n%s"</span>, <span class="keyword">this</span>));</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  ImageView target = <span class="keyword">this</span>.target.get();</span><br><span class="line">  <span class="keyword">if</span> (target == <span class="keyword">null</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  Context context = picasso.context;</span><br><span class="line">  <span class="keyword">boolean</span> indicatorsEnabled = picasso.indicatorsEnabled;</span><br><span class="line">  PicassoDrawable.setBitmap(target, context, result, from, noFade, indicatorsEnabled);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (callback != <span class="keyword">null</span>) &#123;</span><br><span class="line">    callback.onSuccess();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>那么一个完整的加载过程在这里就结束了。</p>
-<h3 id="与Glide的异同"><a href="#与Glide的异同" class="headerlink" title="与Glide的异同"></a>与<code>Glide</code>的异同</h3><ul>
+<h2 id="与Glide的异同"><a href="#与Glide的异同" class="headerlink" title="与Glide的异同"></a>与<code>Glide</code>的异同</h2><ul>
 <li><p>说实话我能想到的同也就是使用方法类似了，另外大的结构也有类似的地方，比如<code>Glide</code>的<code>ModelLoader</code>、<code>Engine</code>和<code>Target</code>分别对应<code>Picasso</code>的<code>RequestHandler</code>、<code>Dispatcher</code>和<code>Action</code>,但是如果从零设计一个图片框架的话，应该都会有这些部分。</p>
 </li>
 <li><p>不同的地方，其实就是设计思路的不同。<code>Glide</code>的功能强大，不仅可以加载一般的图片，也能加载gif、视频，因此具备极致的扩展性，几乎每个组件是一个接口可供外界重新实现，另外它宣传具有极致的滑动流畅性，因此在内存缓存上做了很大的文章，一个完整请求会有四级缓存，其中设计了<code>BitmapPool</code>这个神器来提升列表滑动的体验。</p>
@@ -379,7 +436,7 @@
 <li><p>而<code>Picasso</code>，是一个纯粹的轻量级图片框架。它只能处理<code>Bitmap</code>，也只愿意处理它。在<code>Picasso</code>的issues里很多人都想要更多的功能，得到的答复都是<code>Picasso</code>目前的目标均已实现。它比<code>Glide</code>轻数倍，甚至没有分包，而且扩展性并不强，只能说在加载图片上有一定的可定制性。</p>
 </li>
 </ul>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p><code>Picasso</code>的源码很好读，没有<code>Glide</code>那么多绕来绕去的抽象方法和接口，<em>读完Glide再来读Picasso完全就是享受</em>，它比<code>Glide</code>更轻，能够满足绝大部分场景的图片加载，因此也是很成功的图片加载框架。<code>Picasso</code>的扩展性没那么强，另外它强依赖于<code>OkHttp</code>，甚至磁盘缓存都是通过<code>OkHttp</code>的磁盘缓存做的，可见<code>Square</code>对自己全家桶的自信程度。只能说这个库的目标就是<code>Square</code>全家桶的使用者，毕竟现在哪个新项目不会用<code>OkHttp</code>呢？</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p><code>Picasso</code>的源码很好读，没有<code>Glide</code>那么多绕来绕去的抽象方法和接口，<em>读完Glide再来读Picasso完全就是享受</em>，它比<code>Glide</code>更轻，能够满足绝大部分场景的图片加载，因此也是很成功的图片加载框架。<code>Picasso</code>的扩展性没那么强，另外它强依赖于<code>OkHttp</code>，甚至磁盘缓存都是通过<code>OkHttp</code>的磁盘缓存做的，可见<code>Square</code>对自己全家桶的自信程度。只能说这个库的目标就是<code>Square</code>全家桶的使用者，毕竟现在哪个新项目不会用<code>OkHttp</code>呢？</p>
 <p>但是！再轻的库，麻烦还是分个包好不好···各种各样的类放在一个包里，强迫症有点受不了···</p>
 
       
@@ -797,8 +854,8 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h3><p>之前一篇简单介绍了<code>OkHttp</code>的概况和使用方式，以及如何与<code>Volley</code>一起使用，知其然也要知其所以然，这一篇大概介绍下这个网络框架的源码结构。基于<code>OkHttp 3.5.0</code></p>
-<h3 id="基本流程"><a href="#基本流程" class="headerlink" title="基本流程"></a>基本流程</h3><p><img src="http://omy50xsvp.bkt.clouddn.com/17-4-2/59741282-file_1491117652168_449f.png" alt="OkHttp源码结构图"></p>
+        <h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><p>之前一篇简单介绍了<code>OkHttp</code>的概况和使用方式，以及如何与<code>Volley</code>一起使用，知其然也要知其所以然，这一篇大概介绍下这个网络框架的源码结构。基于<code>OkHttp 3.5.0</code></p>
+<h2 id="基本流程"><a href="#基本流程" class="headerlink" title="基本流程"></a>基本流程</h2><p><img src="http://omy50xsvp.bkt.clouddn.com/17-4-2/59741282-file_1491117652168_449f.png" alt="OkHttp源码结构图"></p>
 <p>这个框架作为Android开发者应该是很熟悉的。入口的构建是建造者模式，在请求的时候手动构建一个<code>Request</code>，通过<code>OkHttpClient</code>的<code>newCall()</code>方法发起请求，获取<code>Response</code>，也就是请求最终的结果。代码如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">OkHttpClient client = <span class="keyword">new</span> OkHttpClient();</span><br><span class="line"></span><br><span class="line"><span class="function">String <span class="title">run</span><span class="params">(String url)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">  Request request = <span class="keyword">new</span> Request.Builder()</span><br><span class="line">      .url(url)</span><br><span class="line">      .build();</span><br><span class="line"></span><br><span class="line">  Response response = client.newCall(request).execute();</span><br><span class="line">  <span class="keyword">return</span> response.body().string();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h2 id="主要组件"><a href="#主要组件" class="headerlink" title="主要组件"></a>主要组件</h2><h4 id="OkHttpClient-Bulider"><a href="#OkHttpClient-Bulider" class="headerlink" title="OkHttpClient.Bulider"></a><code>OkHttpClient.Bulider</code></h4><ul>
@@ -840,92 +897,6 @@
 <li>负责向服务器发送请求，从服务器读取返回结果</li>
 </ul>
 <p>环环相扣，是一个典型的责任链模式，这些<code>Interceptor</code>与我们平时写的简单的<code>Interceptor</code>本质是一样的，都是实现一个<code>intercept(Chain chain)</code>方法，然后在<code>Request</code>和<code>Response</code>上做文章，但是套在一起，就实现了一个完整的网络请求过程，同时还完成了重试、缓存这些工作。具体的代码就不分析了···因为具体发起请求和读取返回结果又是<code>HttpCodec</code>和<code>Okio</code>这两个大家伙的工作，分析起来又是大把的时间耗在里面了(都是泪)。有兴趣的同学可以读读看。如果只是分析<code>OkHttp</code>大的源码结构的话，这几个类就足够了。</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/">Android</a></li></ul>
-	</div>
-
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-在项目中使用OkHttp" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2016/07/24/在项目中使用OkHttp/" class="article-date">
-  	<time datetime="2016-07-24T14:41:07.000Z" itemprop="datePublished">2016-07-24</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/07/24/在项目中使用OkHttp/">在项目中使用OkHttp</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="What"><a href="#What" class="headerlink" title="What"></a>What</h2><p>对于<code>OkHttp</code>的简介就直接复制官网了：</p>
-<p>HTTP is the way modern applications network. It’s how we exchange data &amp; media. Doing HTTP efficiently makes your stuff load faster and saves bandwidth.</p>
-<p>OkHttp is an HTTP client that’s efficient by default:</p>
-<ul>
-<li>HTTP/2 support allows all requests to the same host to share a socket.</li>
-<li>Connection pooling reduces request latency (if HTTP/2 isn’t available).</li>
-<li>Transparent GZIP shrinks download sizes.</li>
-<li>Response caching avoids the network completely for repeat requests.</li>
-<li>Supports both synchronous blocking calls and async calls with callbacks.</li>
-</ul>
-<p>OkHttp perseveres when the network is troublesome: it will silently recover from common connection problems. If your service has multiple IP addresses OkHttp will attempt alternate addresses if the first connect fails. This is necessary for IPv4+IPv6 and for services hosted in redundant data centers. OkHttp initiates new connections with modern TLS features (SNI, ALPN), and falls back to TLS 1.0 if the handshake fails.</p>
-<p>Using OkHttp is easy. Its request/response API is designed with fluent builders and immutability. It supports both synchronous blocking calls and async calls with callbacks.</p>
-<p>OkHttp supports Android 2.3 and above. For Java, the minimum requirement is 1.7.</p>
-<h2 id="Why"><a href="#Why" class="headerlink" title="Why"></a>Why</h2><p>Android为我们提供了两种HTTP交互的方式：<code>HttpURLConnection</code>和<code>Apache-HTTPClient</code>，虽然两者都支持HTTPS，流的上传和下载，配置超时，IPv6和连接池，已足够满足我们各种HTTP请求的需求。但更高效的使用HTTP可以让应用运行更快、更节省流量。而<code>OkHttp</code>就是为此而生。</p>
-<p>那么除了更cool之外，为什么要用<code>OkHttp</code>替换掉项目里用了很久的<code>HttpClient</code>和<code>HttpURLConnection</code>？</p>
-<p>首先，从实际使用的角度看，<code>OkHttp</code>除了具备<code>HttpClient</code>和<code>HttpURLConnection</code>具有的功能以外，</p>
-<ul>
-<li>本身支持同步和异步请求，<code>OkHttp</code>的<code>Request</code>和<code>Reponse</code>现在都用了建造者模式，写起来更清晰，即使不封装代码量也并不大</li>
-</ul>
-<p>一个典型的<code>OkHttp</code>异步请求：<br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> OkHttpClient client = <span class="keyword">new</span> OkHttpClient();</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">  Request request = <span class="keyword">new</span> Request.Builder()</span><br><span class="line">      .url(<span class="string">"http://publicobject.com/helloworld.txt"</span>)</span><br><span class="line">      .build();</span><br><span class="line"></span><br><span class="line">  client.newCall(request).enqueue(<span class="keyword">new</span> Callback() &#123;</span><br><span class="line">    <span class="annotation">@Override</span> <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onFailure</span><span class="params">(Call call, IOException e)</span> </span>&#123;</span><br><span class="line">      e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="annotation">@Override</span> <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onResponse</span><span class="params">(Call call, Response response)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">      <span class="keyword">if</span> (!response.isSuccessful()) <span class="keyword">throw</span> <span class="keyword">new</span> IOException(<span class="string">"Unexpected code "</span> + response);</span><br><span class="line"></span><br><span class="line">      Headers responseHeaders = response.headers();</span><br><span class="line">      <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>, size = responseHeaders.size(); i &lt; size; i++) &#123;</span><br><span class="line">        System.out.println(responseHeaders.name(i) + <span class="string">": "</span> + responseHeaders.value(i));</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      System.out.println(response.body().string());</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<ul>
-<li>共享同一个Socket来处理同一个服务器的所有请求，利用连接池技术减少请求延迟，缓存响应数据来减少重复的网络请求</li>
-<li>支持<em>GZIP</em>，不需要我们手动处理<em>GZIP</em></li>
-<li>自带更强到的IO操作框架<code>Okio</code></li>
-<li>从很多常用的连接问题中自动恢复</li>
-<li>如果服务器配置了多个IP地址，当第一个IP连接失败的时候，<code>OkHttp</code>会自动尝试下一个IP</li>
-<li>提供了强大的<code>Interceptors</code>（拦截器），我们可以通过注册自己的<code>Interceptors</code>来对每次请求进行监控和改写，比如最基础的打印每次请求的基本信息</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LogInterceptor</span> <span class="keyword">implements</span> <span class="title">Interceptor</span> </span>&#123;</span><br><span class="line">     <span class="annotation">@Override</span> <span class="function"><span class="keyword">public</span> Response <span class="title">intercept</span><span class="params">(Chain chain)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">   Request request = chain.request();</span><br><span class="line"></span><br><span class="line">   Log.d(<span class="string">"request url:"</span>,request.url());</span><br><span class="line"></span><br><span class="line">   Response response = chain.proceed(request);</span><br><span class="line"></span><br><span class="line">   Log.d(<span class="string">"reponse url:"</span>,response.request().url());</span><br><span class="line"></span><br><span class="line">   <span class="keyword">return</span> response;</span><br><span class="line">   &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
-<p>另外从外部因素来说，Google官方从Android4.4的时候已经开始使用<code>OkHttp</code>，sdk23彻底抛弃了<code>HttpClient</code>而采用OkHttp。许多新的强大的开源库也默认支持<code>OkHttp</code>作为网络传输层，例如比<code>Volley</code>更快的<code>Retrofit</code>。</p>
-<p><code>OkHttp</code>目前的这些优势应该已经足够有理由替换掉<code>HttpClient</code>和<code>HttpURLConnection</code>了（单说网络请求传输速度，<code>OkHttp</code>并没有更快，因为<code>HttpClient</code>已经很强大了，它的优势主要还是在于配置简单，易用以及官方和开源社区的支持）。</p>
-<h2 id="How"><a href="#How" class="headerlink" title="How"></a>How</h2><p>比较典型的是替换<code>Volley</code>中的<code>HttpStack</code><br><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">OkHttpStack</span> <span class="keyword">implements</span> <span class="title">HttpStack</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> OkHttpClient mOkHttpClient;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> UrlRewriter mUrlRewriter;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">UrlRewriter</span> </span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">rewriteUrl</span><span class="params">(String originalUrl)</span></span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">OkHttpStack</span><span class="params">(OkHttpClient okHttpClient)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>(<span class="keyword">null</span>, okHttpClient);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">OkHttpStack</span><span class="params">(UrlRewriter urlRewriter, OkHttpClient okHttpClient)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.mOkHttpClient = okHttpClient;</span><br><span class="line">        <span class="keyword">this</span>.mUrlRewriter = urlRewriter;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="annotation">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> HttpResponse <span class="title">performRequest</span><span class="params">(Request&lt;?&gt; request, Map&lt;String, String&gt; additionalHeaders)</span> <span class="keyword">throws</span> IOException, AuthFailureError </span>&#123;</span><br><span class="line">        <span class="comment">//加工url，需要UrlRewriter</span></span><br><span class="line">        String url = request.getUrl();</span><br><span class="line">        <span class="keyword">if</span> (mUrlRewriter != <span class="keyword">null</span>) &#123;</span><br><span class="line">            String rewritten = mUrlRewriter.rewriteUrl(url);</span><br><span class="line">            <span class="keyword">if</span> (rewritten == <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> IOException(<span class="string">"URL blocked by rewriter: "</span> + url);</span><br><span class="line">            &#125;</span><br><span class="line">            url = rewritten;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//设置header</span></span><br><span class="line">        okhttp3.Request.Builder okHttpRequestBuilder = <span class="keyword">new</span> okhttp3.Request.Builder();</span><br><span class="line">        Map&lt;String, String&gt; headers = <span class="keyword">new</span> HashMap&lt;String, String&gt;();</span><br><span class="line">        headers.putAll(request.getHeaders());</span><br><span class="line">        headers.putAll(additionalHeaders);</span><br><span class="line">        <span class="keyword">for</span> (String headerName : headers.keySet()) &#123;</span><br><span class="line">            okHttpRequestBuilder.header(headerName, headers.get(headerName));</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//设置connectionParameters</span></span><br><span class="line">        setConnectionParametersForRequest(okHttpRequestBuilder, request);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//发起请求</span></span><br><span class="line">        okhttp3.Request okHttpRequest = okHttpRequestBuilder.url(url).build();</span><br><span class="line">        Response okHttpResponse = mOkHttpClient.newCall(okHttpRequest).execute();</span><br><span class="line"></span><br><span class="line">        <span class="comment">//转换Response</span></span><br><span class="line">        StatusLine responseStatus = <span class="keyword">new</span> BasicStatusLine(parseProtocol(okHttpResponse.protocol()), okHttpResponse.code(), okHttpResponse.message());</span><br><span class="line">        BasicHttpResponse response = <span class="keyword">new</span> BasicHttpResponse(responseStatus);</span><br><span class="line">        response.setEntity(entityFromOkHttpResponse(okHttpResponse));</span><br><span class="line">        Headers responseHeaders = okHttpResponse.headers();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>, len = responseHeaders.size(); i &lt; len; i++) &#123;</span><br><span class="line">            <span class="keyword">final</span> String name = responseHeaders.name(i), value = responseHeaders.value(i);</span><br><span class="line">            <span class="keyword">if</span> (name != <span class="keyword">null</span>) &#123;</span><br><span class="line">                response.addHeader(<span class="keyword">new</span> BasicHeader(name, value));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> response;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> HttpEntity <span class="title">entityFromOkHttpResponse</span><span class="params">(Response r)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        BasicHttpEntity entity = <span class="keyword">new</span> BasicHttpEntity();</span><br><span class="line">        ResponseBody body = r.body();</span><br><span class="line">        entity.setContent(body.byteStream());</span><br><span class="line">        entity.setContentLength(body.contentLength());</span><br><span class="line">        entity.setContentEncoding(r.header(<span class="string">"Content-Encoding"</span>));</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (body.contentType() != <span class="keyword">null</span>) &#123;</span><br><span class="line">            entity.setContentType(body.contentType().type());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> entity;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> ProtocolVersion <span class="title">parseProtocol</span><span class="params">(<span class="keyword">final</span> Protocol protocol)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">switch</span> (protocol) &#123;</span><br><span class="line">            <span class="keyword">case</span> HTTP_1_0:</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">new</span> ProtocolVersion(<span class="string">"HTTP"</span>, <span class="number">1</span>, <span class="number">0</span>);</span><br><span class="line">            <span class="keyword">case</span> HTTP_1_1:</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">new</span> ProtocolVersion(<span class="string">"HTTP"</span>, <span class="number">1</span>, <span class="number">1</span>);</span><br><span class="line">            <span class="keyword">case</span> SPDY_3:</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">new</span> ProtocolVersion(<span class="string">"SPDY"</span>, <span class="number">3</span>, <span class="number">1</span>);</span><br><span class="line">            <span class="keyword">case</span> HTTP_2:</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">new</span> ProtocolVersion(<span class="string">"HTTP"</span>, <span class="number">2</span>, <span class="number">0</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalAccessError(<span class="string">"Unkwown protocol"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">setConnectionParametersForRequest</span><span class="params">(okhttp3.Request.Builder builder, Request&lt;?&gt; request)</span> <span class="keyword">throws</span> IOException, AuthFailureError </span>&#123;</span><br><span class="line">       <span class="keyword">byte</span>[] postBody = <span class="keyword">null</span>;</span><br><span class="line">       <span class="keyword">switch</span> (request.getMethod()) &#123;</span><br><span class="line">           <span class="keyword">case</span> Request.Method.DEPRECATED_GET_OR_POST:</span><br><span class="line">               postBody = request.getBody();</span><br><span class="line">               <span class="keyword">if</span> (postBody != <span class="keyword">null</span>) &#123;</span><br><span class="line">                   builder.post(RequestBody.create(MediaType.parse(request.getBodyContentType()), postBody));</span><br><span class="line">               &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                   builder.get();</span><br><span class="line">               &#125;</span><br><span class="line">               <span class="keyword">break</span>;</span><br><span class="line">           <span class="keyword">case</span> Request.Method.GET:</span><br><span class="line">               builder.get();</span><br><span class="line">               <span class="keyword">break</span>;</span><br><span class="line">           <span class="keyword">case</span> Request.Method.DELETE:</span><br><span class="line">               builder.delete();</span><br><span class="line">               <span class="keyword">break</span>;</span><br><span class="line">           <span class="keyword">case</span> Request.Method.POST:</span><br><span class="line">               postBody = request.getBody();</span><br><span class="line">               <span class="keyword">if</span> (postBody == <span class="keyword">null</span>) &#123;</span><br><span class="line">                   builder.post(RequestBody.create(MediaType.parse(request.getBodyContentType()), <span class="string">""</span>));</span><br><span class="line">               &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                   builder.post(RequestBody.create(MediaType.parse(request.getBodyContentType()), postBody));</span><br><span class="line">               &#125;</span><br><span class="line">               <span class="keyword">break</span>;</span><br><span class="line">           <span class="keyword">case</span> Request.Method.PUT:</span><br><span class="line">               postBody = request.getBody();</span><br><span class="line">               <span class="keyword">if</span> (postBody == <span class="keyword">null</span>) &#123;</span><br><span class="line">                   builder.put(RequestBody.create(MediaType.parse(request.getBodyContentType()), <span class="string">""</span>));</span><br><span class="line">               &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                   builder.put(RequestBody.create(MediaType.parse(request.getBodyContentType()), postBody));</span><br><span class="line">               &#125;</span><br><span class="line">               <span class="keyword">break</span>;</span><br><span class="line">           <span class="keyword">case</span> Request.Method.HEAD:</span><br><span class="line">               builder.head();</span><br><span class="line">               <span class="keyword">break</span>;</span><br><span class="line">           <span class="keyword">case</span> Request.Method.OPTIONS:</span><br><span class="line">               builder.method(<span class="string">"OPTIONS"</span>, <span class="keyword">null</span>);</span><br><span class="line">               <span class="keyword">break</span>;</span><br><span class="line">           <span class="keyword">case</span> Request.Method.TRACE:</span><br><span class="line">               builder.method(<span class="string">"TRACE"</span>, <span class="keyword">null</span>);</span><br><span class="line">               <span class="keyword">break</span>;</span><br><span class="line">           <span class="keyword">case</span> Request.Method.PATCH:</span><br><span class="line">               postBody = request.getBody();</span><br><span class="line">               <span class="keyword">if</span> (postBody == <span class="keyword">null</span>) &#123;</span><br><span class="line">                   builder.patch(RequestBody.create(MediaType.parse(request.getBodyContentType()), <span class="string">""</span>));</span><br><span class="line">               &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                   builder.patch(RequestBody.create(MediaType.parse(request.getBodyContentType()), postBody));</span><br><span class="line">               &#125;</span><br><span class="line">               <span class="keyword">break</span>;</span><br><span class="line">           <span class="keyword">default</span>:</span><br><span class="line">               <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Unknown method type."</span>);</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
 
       
     </div>

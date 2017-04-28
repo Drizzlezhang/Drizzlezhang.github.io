@@ -17,7 +17,7 @@
 基本流程
 这个框架作为Android开发者应该是很熟悉的。入口的构建是建造者模式，在请求的时候手动构建一个Request，通过OkHttpClient的newCall()方法发起请求，获取Response，也就是请求最终">
 <meta property="og:image" content="http://omy50xsvp.bkt.clouddn.com/17-4-2/59741282-file_1491117652168_449f.png">
-<meta property="og:updated_time" content="2017-04-02T08:22:55.000Z">
+<meta property="og:updated_time" content="2017-04-28T07:00:46.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="OkHttp源码结构分析">
 <meta name="twitter:description" content="基本概念之前一篇简单介绍了OkHttp的概况和使用方式，以及如何与Volley一起使用，知其然也要知其所以然，这一篇大概介绍下这个网络框架的源码结构。基于OkHttp 3.5.0
@@ -145,8 +145,8 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h3><p>之前一篇简单介绍了<code>OkHttp</code>的概况和使用方式，以及如何与<code>Volley</code>一起使用，知其然也要知其所以然，这一篇大概介绍下这个网络框架的源码结构。基于<code>OkHttp 3.5.0</code></p>
-<h3 id="基本流程"><a href="#基本流程" class="headerlink" title="基本流程"></a>基本流程</h3><p><img src="http://omy50xsvp.bkt.clouddn.com/17-4-2/59741282-file_1491117652168_449f.png" alt="OkHttp源码结构图"></p>
+        <h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><p>之前一篇简单介绍了<code>OkHttp</code>的概况和使用方式，以及如何与<code>Volley</code>一起使用，知其然也要知其所以然，这一篇大概介绍下这个网络框架的源码结构。基于<code>OkHttp 3.5.0</code></p>
+<h2 id="基本流程"><a href="#基本流程" class="headerlink" title="基本流程"></a>基本流程</h2><p><img src="http://omy50xsvp.bkt.clouddn.com/17-4-2/59741282-file_1491117652168_449f.png" alt="OkHttp源码结构图"></p>
 <p>这个框架作为Android开发者应该是很熟悉的。入口的构建是建造者模式，在请求的时候手动构建一个<code>Request</code>，通过<code>OkHttpClient</code>的<code>newCall()</code>方法发起请求，获取<code>Response</code>，也就是请求最终的结果。代码如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">OkHttpClient client = <span class="keyword">new</span> OkHttpClient();</span><br><span class="line"></span><br><span class="line"><span class="function">String <span class="title">run</span><span class="params">(String url)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">  Request request = <span class="keyword">new</span> Request.Builder()</span><br><span class="line">      .url(url)</span><br><span class="line">      .build();</span><br><span class="line"></span><br><span class="line">  Response response = client.newCall(request).execute();</span><br><span class="line">  <span class="keyword">return</span> response.body().string();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h2 id="主要组件"><a href="#主要组件" class="headerlink" title="主要组件"></a>主要组件</h2><h4 id="OkHttpClient-Bulider"><a href="#OkHttpClient-Bulider" class="headerlink" title="OkHttpClient.Bulider"></a><code>OkHttpClient.Bulider</code></h4><ul>
