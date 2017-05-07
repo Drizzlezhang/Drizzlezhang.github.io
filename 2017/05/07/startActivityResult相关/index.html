@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" >
+  <title>startActivityForResult相关 | Drizzlezhang&#39;s blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="startActivityResult这个方法其实做Android开发的都应该很熟悉了，但是可能还是有人不知道Fragment里也有这个方法。虽然之前在Fragment里写代码的时候看到过这个方法，也能猜出来能干啥，但是最近才第一次用到，所以总结一下。首先在使用上就不多说了，在Fragment中和在Activity中使用startActivityForResult的方式是一样的，Fragment也">
+<meta property="og:type" content="article">
+<meta property="og:title" content="startActivityForResult相关">
+<meta property="og:url" content="http://yoursite.com/2017/05/07/startActivityResult相关/index.html">
+<meta property="og:site_name" content="Drizzlezhang's blog">
+<meta property="og:description" content="startActivityResult这个方法其实做Android开发的都应该很熟悉了，但是可能还是有人不知道Fragment里也有这个方法。虽然之前在Fragment里写代码的时候看到过这个方法，也能猜出来能干啥，但是最近才第一次用到，所以总结一下。首先在使用上就不多说了，在Fragment中和在Activity中使用startActivityForResult的方式是一样的，Fragment也">
+<meta property="og:updated_time" content="2017-05-07T03:46:33.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="startActivityForResult相关">
+<meta name="twitter:description" content="startActivityResult这个方法其实做Android开发的都应该很熟悉了，但是可能还是有人不知道Fragment里也有这个方法。虽然之前在Fragment里写代码的时候看到过这个方法，也能猜出来能干啥，但是最近才第一次用到，所以总结一下。首先在使用上就不多说了，在Fragment中和在Activity中使用startActivityForResult的方式是一样的，Fragment也">
+  
+  
+  <link rel="stylesheet" href="/css/style.css" type="text/css">
+</head>
+
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img src="http://ww3.sinaimg.cn/large/a61009a8jw1f2be34ug4rj208i08idg0.jpg" class="js-avatar" style="width: 100%;height: 100%;opacity: 1;">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">Drizzle Zhang</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">野蛮生长，不忘初心</p>
+		
+
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+						</div>
+					</nav>
+				</section>
+				
+				
+				
+				
+
+				
+			</div>
+		</div>
+	</header>				
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">Drizzle Zhang</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+			
+				<img src="http://ww3.sinaimg.cn/large/a61009a8jw1f2be34ug4rj208i08idg0.jpg" class="js-avatar" style="width: 100%;height: 100%;opacity: 1;">
+			
+			</div>
+			<hgroup>
+			  <h1 class="header-author">Drizzle Zhang</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">野蛮生长，不忘初心</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap"><article id="_posts-startActivityResult相关" class="article article-type-_posts" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2017/05/07/startActivityResult相关/" class="article-date">
+  	<time datetime="2017-05-07T02:32:19.000Z" itemprop="datePublished">2017-05-07</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      startActivityForResult相关
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/">Android</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><code>startActivityResult</code>这个方法其实做Android开发的都应该很熟悉了，但是可能还是有人不知道Fragment里也有这个方法。虽然之前在Fragment里写代码的时候看到过这个方法，也能猜出来能干啥，但是最近才第一次用到，所以总结一下。首先在使用上就不多说了，在Fragment中和在Activity中使用<code>startActivityForResult</code>的方式是一样的，Fragment也有<code>onActivityResult</code>方法可供重写，但是记住不要调用<code>getActivity().startActivityForResult</code>方法，这就是两回事了。</p>
+<h2 id="表现"><a href="#表现" class="headerlink" title="表现"></a>表现</h2><p>首先看在使用上会有什么问题。我们遇到的比较典型的就是在一个Activity中嵌套一个Fragment，在两个页面里都有<code>startActivityForResult</code>的调用，也都重写了<code>onActivityResult</code>，然后调用方法并收到返回的结果。这时候我们会发现在各自页面里都收到返回的数据，也能对上对应的requestCode，但是，在Activity里也能收到在Fragment里的请求结果，但是requestCode对不上。从这个表现我们能大概猜测出来，Fragment的<code>startActivityForResult</code>和对应的<code>onActivityResult</code>也是借助Activity对应的方法来实现，只是做了一点处理来避免冲突。</p>
+<h2 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h2><p>猜测当然是不严谨的，还是看源码来的实在。先看Fragment里的源码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span><br><span class="line"> * Called by Fragment.startActivityForResult() to implement its behavior.</span><br><span class="line"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">startActivityFromFragment</span><span class="params">(Fragment fragment, Intent intent,</span><br><span class="line">        <span class="keyword">int</span> requestCode, @Nullable Bundle options)</span> </span>&#123;</span><br><span class="line">    mStartedActivityFromFragment = <span class="keyword">true</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (requestCode == -<span class="number">1</span>) &#123;</span><br><span class="line">            ActivityCompat.startActivityForResult(<span class="keyword">this</span>, intent, -<span class="number">1</span>, options);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        checkForValidRequestCode(requestCode);</span><br><span class="line">        <span class="keyword">int</span> requestIndex = allocateRequestIndex(fragment);</span><br><span class="line">        ActivityCompat.startActivityForResult(</span><br><span class="line">                <span class="keyword">this</span>, intent, ((requestIndex + <span class="number">1</span>) &lt;&lt; <span class="number">16</span>) + (requestCode &amp; <span class="number">0xffff</span>), options);</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        mStartedActivityFromFragment = <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Allocates the next available startActivityForResult request index.</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">allocateRequestIndex</span><span class="params">(Fragment fragment)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// Sanity check that we havn't exhaused the request index space.</span></span><br><span class="line">    <span class="keyword">if</span> (mPendingFragmentActivityResults.size() &gt;= MAX_NUM_PENDING_FRAGMENT_ACTIVITY_RESULTS) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Too many pending Fragment activity results."</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Find an unallocated request index in the mPendingFragmentActivityResults map.</span></span><br><span class="line">    <span class="keyword">while</span> (mPendingFragmentActivityResults.indexOfKey(mNextCandidateRequestIndex) &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">        mNextCandidateRequestIndex =</span><br><span class="line">                (mNextCandidateRequestIndex + <span class="number">1</span>) % MAX_NUM_PENDING_FRAGMENT_ACTIVITY_RESULTS;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> requestIndex = mNextCandidateRequestIndex;</span><br><span class="line">    mPendingFragmentActivityResults.put(requestIndex, fragment.mWho);</span><br><span class="line">    mNextCandidateRequestIndex =</span><br><span class="line">            (mNextCandidateRequestIndex + <span class="number">1</span>) % MAX_NUM_PENDING_FRAGMENT_ACTIVITY_RESULTS;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> requestIndex;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span><br><span class="line"> * Checks whether the given request code is a valid code by masking it with 0xffff0000. Throws</span><br><span class="line"> * an &#123;<span class="doctag">@link</span> IllegalArgumentException&#125; if the code is not valid.</span><br><span class="line"> */</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">checkForValidRequestCode</span><span class="params">(<span class="keyword">int</span> requestCode)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> ((requestCode &amp; <span class="number">0xffff0000</span>) != <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Can only use lower 16 bits for requestCode"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>源码很简单，注释也很清楚。首先对是否由Fragment发起请求做一个判断，然后如果requestCode为-1则直接正常调用父Activity的<code>startActivityForResult</code>方法，因为requestCode为-1代表调用的是<code>startActivity</code>方法。然后对requestCode做一个过滤，，必须小于0xffff0000。接着因为一个Activity可能有多个Fragment，所以还要拿到请求的序号。然后就是调用<code>ActivityCompat.startActivityForResult</code>了：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">startActivityForResult</span><span class="params">(Activity activity, Intent intent, <span class="keyword">int</span> requestCode,</span><br><span class="line">        @Nullable Bundle options)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (Build.VERSION.SDK_INT &gt;= <span class="number">16</span>) &#123;</span><br><span class="line">        ActivityCompatJB.startActivityForResult(activity, intent, requestCode, options);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        activity.startActivityForResult(intent, requestCode);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里就没啥好说的了。那么关键就在调用之前对requestCode的处理那里了，那里并没有直接传入requestCode，而是传入<code>((requestIndex + 1) &lt;&lt; 16) + (requestCode &amp; 0xffff)</code>。requestIndex是Fragment的请求序号，这一个转换比较明确的表达就是：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">(requestIndex + <span class="number">1</span>) * <span class="number">65536</span> + requestCode</span><br></pre></td></tr></table></figure>
+<p>ok，这里我们也能猜到一点东西了，就是用这个公式来对requestCode做区分，使对应的Activity和Fragment们都能得到正确的回调而不会发生冲突。那么我们再看<code>Activity</code>的<code>onActivityResult</code>方法来验证一下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">/**</span><br><span class="line"> * Dispatch incoming result to the correct fragment.</span><br><span class="line"> */</span></span><br><span class="line"><span class="annotation">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onActivityResult</span><span class="params">(<span class="keyword">int</span> requestCode, <span class="keyword">int</span> resultCode, Intent data)</span> </span>&#123;</span><br><span class="line">    mFragments.noteStateNotSaved();</span><br><span class="line">    <span class="keyword">int</span> requestIndex = requestCode&gt;&gt;<span class="number">16</span>;</span><br><span class="line">    <span class="keyword">if</span> (requestIndex != <span class="number">0</span>) &#123;</span><br><span class="line">        requestIndex--;</span><br><span class="line"></span><br><span class="line">        String who = mPendingFragmentActivityResults.get(requestIndex);</span><br><span class="line">        mPendingFragmentActivityResults.remove(requestIndex);</span><br><span class="line">        <span class="keyword">if</span> (who == <span class="keyword">null</span>) &#123;</span><br><span class="line">            Log.w(TAG, <span class="string">"Activity result delivered for unknown Fragment."</span>);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        Fragment targetFragment = mFragments.findFragmentByWho(who);</span><br><span class="line">        <span class="keyword">if</span> (targetFragment == <span class="keyword">null</span>) &#123;</span><br><span class="line">            Log.w(TAG, <span class="string">"Activity result no fragment exists for who: "</span> + who);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            targetFragment.onActivityResult(requestCode &amp; <span class="number">0xffff</span>, resultCode, data);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">super</span>.onActivityResult(requestCode, resultCode, data);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>看得出来基本与猜测的一致，在<code>onActivityResult</code>里会拿着requestCode推出requestIndex，再推出对应的Fragment和对应的requestCode，再调用Fragment的<code>onActivityResult</code>方法完成回调。整个流程结束。</p>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>根据源码的分析，基本能解释了开始提到的表现都是什么原因。Fragment的<code>startActivityForResult</code>这一整套流程都要借助父Activity对应的方法来实现，所以在Activity里自然也能拦截到返回的数据，但是因为requestCode被做了处理，所以无法映射到正确的requestCode。看了这个源码只能说Fragment给Google挖的坑太大了···</p>
+<h2 id="startActivityForResult在Adapter里如何解耦"><a href="#startActivityForResult在Adapter里如何解耦" class="headerlink" title="startActivityForResult在Adapter里如何解耦"></a>startActivityForResult在Adapter里如何解耦</h2><p>在搜索今天这篇东西相关的资料的时候看到了这个问题，觉得还挺有意思的。现在的页面越来越复杂，Adapter也越来越复杂，虽然现在几乎Adapter里都会传入Activity，但是理论上来说Adapter只是一个适配器，应该只负责View和data的绑定，而不应该做太多的逻辑处理。所以我目前想到的比较合理的解耦方式应该是Adapter向外界暴露对应的<code>startActivityForResult</code>和<code>onActivityResult</code>两个方法，类似今天分析的源码Fragment所做的那样，这样做也可以避免处理Fragment和Activity不同的问题，无论Adapter在哪里使用都不受影响。如果Adapter更复杂，具体的逻辑已经被拆成了单个的item来实现，那么对应的item也暴露这两个方法，然后交给Adapter来代理，requestCode也交给Adapter来管理。这应该是比较合理的解耦方式。</p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2017/04/27/Retrofit源码分析/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Retrofit源码分析</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2017 Drizzle Zhang
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+
+<script>
+	var yiliaConfig = {
+		fancybox: undefined,
+		mathjax: undefined,
+		animate: undefined,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: undefined
+	}
+</script>
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js" type="text/javascript"></script>
+<script src="/js/main.js" type="text/javascript"></script>
+
+
+
+
+
+
+  </div>
+</body>
+</html>

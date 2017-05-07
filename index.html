@@ -104,6 +104,73 @@
 
       <div class="body-wrap">
   
+    <article id="_posts-startActivityResult相关" class="article article-type-_posts" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2017/05/07/startActivityResult相关/" class="article-date">
+  	<time datetime="2017-05-07T02:32:19.000Z" itemprop="datePublished">2017-05-07</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/05/07/startActivityResult相关/">startActivityForResult相关</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><code>startActivityResult</code>这个方法其实做Android开发的都应该很熟悉了，但是可能还是有人不知道Fragment里也有这个方法。虽然之前在Fragment里写代码的时候看到过这个方法，也能猜出来能干啥，但是最近才第一次用到，所以总结一下。首先在使用上就不多说了，在Fragment中和在Activity中使用<code>startActivityForResult</code>的方式是一样的，Fragment也有<code>onActivityResult</code>方法可供重写，但是记住不要调用<code>getActivity().startActivityForResult</code>方法，这就是两回事了。</p>
+<h2 id="表现"><a href="#表现" class="headerlink" title="表现"></a>表现</h2><p>首先看在使用上会有什么问题。我们遇到的比较典型的就是在一个Activity中嵌套一个Fragment，在两个页面里都有<code>startActivityForResult</code>的调用，也都重写了<code>onActivityResult</code>，然后调用方法并收到返回的结果。这时候我们会发现在各自页面里都收到返回的数据，也能对上对应的requestCode，但是，在Activity里也能收到在Fragment里的请求结果，但是requestCode对不上。从这个表现我们能大概猜测出来，Fragment的<code>startActivityForResult</code>和对应的<code>onActivityResult</code>也是借助Activity对应的方法来实现，只是做了一点处理来避免冲突。</p>
+<h2 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h2><p>猜测当然是不严谨的，还是看源码来的实在。先看Fragment里的源码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span><br><span class="line"> * Called by Fragment.startActivityForResult() to implement its behavior.</span><br><span class="line"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">startActivityFromFragment</span><span class="params">(Fragment fragment, Intent intent,</span><br><span class="line">        <span class="keyword">int</span> requestCode, @Nullable Bundle options)</span> </span>&#123;</span><br><span class="line">    mStartedActivityFromFragment = <span class="keyword">true</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (requestCode == -<span class="number">1</span>) &#123;</span><br><span class="line">            ActivityCompat.startActivityForResult(<span class="keyword">this</span>, intent, -<span class="number">1</span>, options);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        checkForValidRequestCode(requestCode);</span><br><span class="line">        <span class="keyword">int</span> requestIndex = allocateRequestIndex(fragment);</span><br><span class="line">        ActivityCompat.startActivityForResult(</span><br><span class="line">                <span class="keyword">this</span>, intent, ((requestIndex + <span class="number">1</span>) &lt;&lt; <span class="number">16</span>) + (requestCode &amp; <span class="number">0xffff</span>), options);</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        mStartedActivityFromFragment = <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Allocates the next available startActivityForResult request index.</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">allocateRequestIndex</span><span class="params">(Fragment fragment)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// Sanity check that we havn't exhaused the request index space.</span></span><br><span class="line">    <span class="keyword">if</span> (mPendingFragmentActivityResults.size() &gt;= MAX_NUM_PENDING_FRAGMENT_ACTIVITY_RESULTS) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Too many pending Fragment activity results."</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Find an unallocated request index in the mPendingFragmentActivityResults map.</span></span><br><span class="line">    <span class="keyword">while</span> (mPendingFragmentActivityResults.indexOfKey(mNextCandidateRequestIndex) &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">        mNextCandidateRequestIndex =</span><br><span class="line">                (mNextCandidateRequestIndex + <span class="number">1</span>) % MAX_NUM_PENDING_FRAGMENT_ACTIVITY_RESULTS;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> requestIndex = mNextCandidateRequestIndex;</span><br><span class="line">    mPendingFragmentActivityResults.put(requestIndex, fragment.mWho);</span><br><span class="line">    mNextCandidateRequestIndex =</span><br><span class="line">            (mNextCandidateRequestIndex + <span class="number">1</span>) % MAX_NUM_PENDING_FRAGMENT_ACTIVITY_RESULTS;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> requestIndex;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span><br><span class="line"> * Checks whether the given request code is a valid code by masking it with 0xffff0000. Throws</span><br><span class="line"> * an &#123;<span class="doctag">@link</span> IllegalArgumentException&#125; if the code is not valid.</span><br><span class="line"> */</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">checkForValidRequestCode</span><span class="params">(<span class="keyword">int</span> requestCode)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> ((requestCode &amp; <span class="number">0xffff0000</span>) != <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Can only use lower 16 bits for requestCode"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>源码很简单，注释也很清楚。首先对是否由Fragment发起请求做一个判断，然后如果requestCode为-1则直接正常调用父Activity的<code>startActivityForResult</code>方法，因为requestCode为-1代表调用的是<code>startActivity</code>方法。然后对requestCode做一个过滤，，必须小于0xffff0000。接着因为一个Activity可能有多个Fragment，所以还要拿到请求的序号。然后就是调用<code>ActivityCompat.startActivityForResult</code>了：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">startActivityForResult</span><span class="params">(Activity activity, Intent intent, <span class="keyword">int</span> requestCode,</span><br><span class="line">        @Nullable Bundle options)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (Build.VERSION.SDK_INT &gt;= <span class="number">16</span>) &#123;</span><br><span class="line">        ActivityCompatJB.startActivityForResult(activity, intent, requestCode, options);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        activity.startActivityForResult(intent, requestCode);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里就没啥好说的了。那么关键就在调用之前对requestCode的处理那里了，那里并没有直接传入requestCode，而是传入<code>((requestIndex + 1) &lt;&lt; 16) + (requestCode &amp; 0xffff)</code>。requestIndex是Fragment的请求序号，这一个转换比较明确的表达就是：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">(requestIndex + <span class="number">1</span>) * <span class="number">65536</span> + requestCode</span><br></pre></td></tr></table></figure>
+<p>ok，这里我们也能猜到一点东西了，就是用这个公式来对requestCode做区分，使对应的Activity和Fragment们都能得到正确的回调而不会发生冲突。那么我们再看<code>Activity</code>的<code>onActivityResult</code>方法来验证一下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">/**</span><br><span class="line"> * Dispatch incoming result to the correct fragment.</span><br><span class="line"> */</span></span><br><span class="line"><span class="annotation">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onActivityResult</span><span class="params">(<span class="keyword">int</span> requestCode, <span class="keyword">int</span> resultCode, Intent data)</span> </span>&#123;</span><br><span class="line">    mFragments.noteStateNotSaved();</span><br><span class="line">    <span class="keyword">int</span> requestIndex = requestCode&gt;&gt;<span class="number">16</span>;</span><br><span class="line">    <span class="keyword">if</span> (requestIndex != <span class="number">0</span>) &#123;</span><br><span class="line">        requestIndex--;</span><br><span class="line"></span><br><span class="line">        String who = mPendingFragmentActivityResults.get(requestIndex);</span><br><span class="line">        mPendingFragmentActivityResults.remove(requestIndex);</span><br><span class="line">        <span class="keyword">if</span> (who == <span class="keyword">null</span>) &#123;</span><br><span class="line">            Log.w(TAG, <span class="string">"Activity result delivered for unknown Fragment."</span>);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        Fragment targetFragment = mFragments.findFragmentByWho(who);</span><br><span class="line">        <span class="keyword">if</span> (targetFragment == <span class="keyword">null</span>) &#123;</span><br><span class="line">            Log.w(TAG, <span class="string">"Activity result no fragment exists for who: "</span> + who);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            targetFragment.onActivityResult(requestCode &amp; <span class="number">0xffff</span>, resultCode, data);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">super</span>.onActivityResult(requestCode, resultCode, data);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>看得出来基本与猜测的一致，在<code>onActivityResult</code>里会拿着requestCode推出requestIndex，再推出对应的Fragment和对应的requestCode，再调用Fragment的<code>onActivityResult</code>方法完成回调。整个流程结束。</p>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>根据源码的分析，基本能解释了开始提到的表现都是什么原因。Fragment的<code>startActivityForResult</code>这一整套流程都要借助父Activity对应的方法来实现，所以在Activity里自然也能拦截到返回的数据，但是因为requestCode被做了处理，所以无法映射到正确的requestCode。看了这个源码只能说Fragment给Google挖的坑太大了···</p>
+<h2 id="startActivityForResult在Adapter里如何解耦"><a href="#startActivityForResult在Adapter里如何解耦" class="headerlink" title="startActivityForResult在Adapter里如何解耦"></a>startActivityForResult在Adapter里如何解耦</h2><p>在搜索今天这篇东西相关的资料的时候看到了这个问题，觉得还挺有意思的。现在的页面越来越复杂，Adapter也越来越复杂，虽然现在几乎Adapter里都会传入Activity，但是理论上来说Adapter只是一个适配器，应该只负责View和data的绑定，而不应该做太多的逻辑处理。所以我目前想到的比较合理的解耦方式应该是Adapter向外界暴露对应的<code>startActivityForResult</code>和<code>onActivityResult</code>两个方法，类似今天分析的源码Fragment所做的那样，这样做也可以避免处理Fragment和Activity不同的问题，无论Adapter在哪里使用都不受影响。如果Adapter更复杂，具体的逻辑已经被拆成了单个的item来实现，那么对应的item也暴露这两个方法，然后交给Adapter来代理，requestCode也交给Adapter来管理。这应该是比较合理的解耦方式。</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/">Android</a></li></ul>
+	</div>
+
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
     <article id="_posts-Retrofit源码分析" class="article article-type-_posts" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -833,103 +900,6 @@
 <li>可以配置更复杂的View或其他业务层组件，<code>Glide</code>负责管理请求、缓存和数据转换。</li>
 </ul>
 <p><code>Glide</code>主要的类和接口基本就是这些，通过这些接口的关系我们已经基本能知道<code>Glide</code>进行一次完成的图片数据请求以及加载到View的过程了。</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/">Android</a></li></ul>
-	</div>
-
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="_posts-OkHttp源码结构分析" class="article article-type-_posts" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2016/08/10/OkHttp源码结构分析/" class="article-date">
-  	<time datetime="2016-08-10T14:40:26.000Z" itemprop="datePublished">2016-08-10</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/08/10/OkHttp源码结构分析/">OkHttp源码结构分析</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><p>之前一篇简单介绍了<code>OkHttp</code>的概况和使用方式，以及如何与<code>Volley</code>一起使用，知其然也要知其所以然，这一篇大概介绍下这个网络框架的源码结构。基于<code>OkHttp 3.5.0</code></p>
-<h2 id="基本流程"><a href="#基本流程" class="headerlink" title="基本流程"></a>基本流程</h2><p><img src="http://omy50xsvp.bkt.clouddn.com/17-4-2/59741282-file_1491117652168_449f.png" alt="OkHttp源码结构图"></p>
-<p>这个框架作为Android开发者应该是很熟悉的。入口的构建是建造者模式，在请求的时候手动构建一个<code>Request</code>，通过<code>OkHttpClient</code>的<code>newCall()</code>方法发起请求，获取<code>Response</code>，也就是请求最终的结果。代码如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">OkHttpClient client = <span class="keyword">new</span> OkHttpClient();</span><br><span class="line"></span><br><span class="line"><span class="function">String <span class="title">run</span><span class="params">(String url)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">  Request request = <span class="keyword">new</span> Request.Builder()</span><br><span class="line">      .url(url)</span><br><span class="line">      .build();</span><br><span class="line"></span><br><span class="line">  Response response = client.newCall(request).execute();</span><br><span class="line">  <span class="keyword">return</span> response.body().string();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="主要组件"><a href="#主要组件" class="headerlink" title="主要组件"></a>主要组件</h2><h4 id="OkHttpClient-Bulider"><a href="#OkHttpClient-Bulider" class="headerlink" title="OkHttpClient.Bulider"></a><code>OkHttpClient.Bulider</code></h4><ul>
-<li>负责构建<code>OkHttpClient</code>,Square官方的建议是全局共用一个<code>OkHttpClient</code>,实际上<code>OkHttpClient</code>虽然有public的狗仔方法，内部也是传入一个默认的Builder.</li>
-</ul>
-<h4 id="OkHttpClient"><a href="#OkHttpClient" class="headerlink" title="OkHttpClient"></a><code>OkHttpClient</code></h4><ul>
-<li>处理配置这个client的参数，核心方法其实就一个：  </li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="annotation">@Override</span> <span class="function"><span class="keyword">public</span> Call <span class="title">newCall</span><span class="params">(Request request)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> RealCall(<span class="keyword">this</span>, request, <span class="keyword">false</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="Request"><a href="#Request" class="headerlink" title="Request"></a><code>Request</code></h4><ul>
-<li>这个类只用来存储请求的数据，不做实际的事情，具体请求的发起由下一个<code>RealCall</code>来做</li>
-</ul>
-<h4 id="RealCall"><a href="#RealCall" class="headerlink" title="RealCall"></a><code>RealCall</code></h4><ul>
-<li><code>RealCall</code>实现了<code>Call</code>接口，关于这个接口的作用，注释已经说清楚了,<code>RealCall</code>是唯一的实现，也就是<code>OkHttp</code>实际用来请求的类</li>
-</ul>
-<blockquote>
-<p>A call is a request that has been prepared for execution. A call can be canceled. As this object<br>represents a single request/response pair (stream), it cannot be executed twice.</p>
-</blockquote>
-<ul>
-<li>那么怎么干活呢？<code>Call</code>这个接口有两个关键的实现方法，<code>execute()</code>和<code>enqueue()</code>，方法名意思已经很明确了，一个同步一个异步，我们只需要看这两个方法的实现就可以了：</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="annotation">@Override</span> <span class="function"><span class="keyword">public</span> Response <span class="title">execute</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">  <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (executed) <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Already Executed"</span>);</span><br><span class="line">    executed = <span class="keyword">true</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  captureCallStackTrace();</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    client.dispatcher().executed(<span class="keyword">this</span>);</span><br><span class="line">    Response result = getResponseWithInterceptorChain();</span><br><span class="line">    <span class="keyword">if</span> (result == <span class="keyword">null</span>) <span class="keyword">throw</span> <span class="keyword">new</span> IOException(<span class="string">"Canceled"</span>);</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">  &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">    client.dispatcher().finished(<span class="keyword">this</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="annotation">@Override</span> <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">enqueue</span><span class="params">(Callback responseCallback)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (executed) <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">"Already Executed"</span>);</span><br><span class="line">    executed = <span class="keyword">true</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  captureCallStackTrace();</span><br><span class="line">  client.dispatcher().enqueue(<span class="keyword">new</span> AsyncCall(responseCallback));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">AsyncCall</span> <span class="keyword">extends</span> <span class="title">NamedRunnable</span> </span>&#123;</span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">final</span> Callback responseCallback;</span><br><span class="line"></span><br><span class="line">  AsyncCall(Callback responseCallback) &#123;</span><br><span class="line">    <span class="keyword">super</span>(<span class="string">"OkHttp %s"</span>, redactedUrl());</span><br><span class="line">    <span class="keyword">this</span>.responseCallback = responseCallback;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function">String <span class="title">host</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> originalRequest.url().host();</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function">Request <span class="title">request</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> originalRequest;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function">RealCall <span class="title">get</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> RealCall.<span class="keyword">this</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="annotation">@Override</span> <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">boolean</span> signalledCallback = <span class="keyword">false</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      Response response = getResponseWithInterceptorChain();</span><br><span class="line">      <span class="keyword">if</span> (retryAndFollowUpInterceptor.isCanceled()) &#123;</span><br><span class="line">        signalledCallback = <span class="keyword">true</span>;</span><br><span class="line">        responseCallback.onFailure(RealCall.<span class="keyword">this</span>, <span class="keyword">new</span> IOException(<span class="string">"Canceled"</span>));</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        signalledCallback = <span class="keyword">true</span>;</span><br><span class="line">        responseCallback.onResponse(RealCall.<span class="keyword">this</span>, response);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">      <span class="keyword">if</span> (signalledCallback) &#123;</span><br><span class="line">        <span class="comment">// Do not signal the callback twice!</span></span><br><span class="line">        Platform.get().log(INFO, <span class="string">"Callback failure for "</span> + toLoggableString(), e);</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        responseCallback.onFailure(RealCall.<span class="keyword">this</span>, e);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">      client.dispatcher().finished(<span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>同步方法很直接，通过<code>getResponseWithInterceptorChain()</code>直接取<code>Response</code>，异步方法则间接一点，包装一个<code>Runnable</code>扔给线程池，本质上最终使用的也是<code>getResponseWithInterceptorChain()</code>。然后我们就要看这个方法是何方神圣了：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function">Response <span class="title">getResponseWithInterceptorChain</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">  <span class="comment">// Build a full stack of interceptors.</span></span><br><span class="line">  List&lt;Interceptor&gt; interceptors = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">  interceptors.addAll(client.interceptors());</span><br><span class="line">  interceptors.add(retryAndFollowUpInterceptor);</span><br><span class="line">  interceptors.add(<span class="keyword">new</span> BridgeInterceptor(client.cookieJar()));</span><br><span class="line">  interceptors.add(<span class="keyword">new</span> CacheInterceptor(client.internalCache()));</span><br><span class="line">  interceptors.add(<span class="keyword">new</span> ConnectInterceptor(client));</span><br><span class="line">  <span class="keyword">if</span> (!forWebSocket) &#123;</span><br><span class="line">    interceptors.addAll(client.networkInterceptors());</span><br><span class="line">  &#125;</span><br><span class="line">  interceptors.add(<span class="keyword">new</span> CallServerInterceptor(forWebSocket));</span><br><span class="line"></span><br><span class="line">  Interceptor.Chain chain = <span class="keyword">new</span> RealInterceptorChain(</span><br><span class="line">      interceptors, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="keyword">null</span>, <span class="number">0</span>, originalRequest);</span><br><span class="line">  <span class="keyword">return</span> chain.proceed(originalRequest);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>熟悉<code>OkHttp</code>的同学都知道<code>OkHttp</code>有一个很厉害的东西，叫<code>Interceptor</code>，只要实现了这个接口，就可以在一个请求的<code>Request</code>和<code>Response</code>之间做很多文章，比如写个<code>LogInterceptor</code>打印请求的各种信息，实现也特别优雅，但是看了源码才知道，<code>Interceptor</code>贯穿了请求的全部，无论是重试机制、缓存还是具体请求，实际上都是通过<code>Interceptor</code>来做的。那么接下来就分析源码中用到的这些<code>Interceptor</code>.</p>
-<h4 id="RetryAndFollowUpInterceptor"><a href="#RetryAndFollowUpInterceptor" class="headerlink" title="RetryAndFollowUpInterceptor"></a><code>RetryAndFollowUpInterceptor</code></h4><ul>
-<li>负责重试和重定向</li>
-</ul>
-<h4 id="BridgeInterceptor"><a href="#BridgeInterceptor" class="headerlink" title="BridgeInterceptor"></a><code>BridgeInterceptor</code></h4><ul>
-<li>负责把请求转换为发送给服务器的请求，把服务器返回的结果包装成我们接收到的<code>Response</code></li>
-</ul>
-<h4 id="CacheInterceptor"><a href="#CacheInterceptor" class="headerlink" title="CacheInterceptor"></a><code>CacheInterceptor</code></h4><ul>
-<li>缓存命中时则直接返回结果，未命中时则在网络请求结果返回时更新缓存</li>
-</ul>
-<h4 id="ConnectInterceptor"><a href="#ConnectInterceptor" class="headerlink" title="ConnectInterceptor"></a><code>ConnectInterceptor</code></h4><ul>
-<li>负责与服务器建立连接</li>
-</ul>
-<h4 id="CallServerInterceptor"><a href="#CallServerInterceptor" class="headerlink" title="CallServerInterceptor"></a><code>CallServerInterceptor</code></h4><ul>
-<li>负责向服务器发送请求，从服务器读取返回结果</li>
-</ul>
-<p>环环相扣，是一个典型的责任链模式，这些<code>Interceptor</code>与我们平时写的简单的<code>Interceptor</code>本质是一样的，都是实现一个<code>intercept(Chain chain)</code>方法，然后在<code>Request</code>和<code>Response</code>上做文章，但是套在一起，就实现了一个完整的网络请求过程，同时还完成了重试、缓存这些工作。具体的代码就不分析了···因为具体发起请求和读取返回结果又是<code>HttpCodec</code>和<code>Okio</code>这两个大家伙的工作，分析起来又是大把的时间耗在里面了(都是泪)。有兴趣的同学可以读读看。如果只是分析<code>OkHttp</code>大的源码结构的话，这几个类就足够了。</p>
 
       
     </div>
